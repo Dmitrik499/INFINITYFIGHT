@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#171a36">
+<title>INFINITY FIGHT — версия 1.1.3</title>
+<style>
+:root{--ink:#fff;--panel:#20264b;--gold:#ffe34d;--blue:#5ce5ff;--pink:#ff5688}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#101329;color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;touch-action:none}
+button{font:inherit;font-weight:900;color:white;border:2px solid #ffffff40;border-radius:16px;padding:13px 16px;background:linear-gradient(180deg,#ffcb4c,#f47b2b);box-shadow:0 5px 0 #963d27,0 9px 18px #07091c55;cursor:pointer;transition:filter .12s,transform .12s}
+button:active{transform:translateY(3px);box-shadow:0 1px 0 #9b3d22}
+#game{display:block;width:100vw;height:100dvh;background:#5dba70}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;background:radial-gradient(ellipse at 50% 10%,#5966b4 0%,#292d61 42%,#11142c 100%);z-index:5;text-align:center;overflow:auto}
+.hidden{display:none!important}.logo{font-size:clamp(34px,10vw,64px);line-height:.94;font-weight:1000;letter-spacing:-2px;text-shadow:0 4px 0 #6d3caa,0 8px 0 #171329,0 0 22px #7e8bff77;transform:rotate(-2deg);margin-bottom:12px}.logo span{color:#ffe14b}.subtitle{opacity:.9;margin:8px 0 24px}.menu-buttons{display:grid;gap:12px;width:min(340px,92vw)}.menu-buttons button{font-size:17px;min-height:52px}.subtitle{font-weight:800;letter-spacing:.5px}.small{line-height:1.45}.small{font-size:12px;opacity:.75;max-width:340px;margin-top:20px}.hero-card{background:#292e59;border:3px solid #8a91ff;border-radius:22px;padding:18px;max-width:340px;width:100%;box-shadow:0 8px 0 #11142b;margin-bottom:18px}.hero{font-size:62px}.hero-card h2{margin:4px 0;color:#ffe14b}.hero-card p{margin:6px 0 12px;font-size:14px}.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}.fighter-grid{display:grid;grid-template-columns:repeat(2,minmax(130px,1fr));gap:10px;width:min(380px,94vw);max-height:62vh;overflow:auto;margin:10px 0}.fighter-option{background:#292e59;border:2px solid #7784d8;border-radius:16px;padding:12px 8px;box-shadow:0 4px 0 #11142b}.fighter-option.active{border-color:#ffe14b;background:#3a3b69}.fighter-option .emoji{font-size:35px}.fighter-option b{display:block;color:#ffe14b}.fighter-option small{display:block;font-size:11px;line-height:1.25;margin-top:5px}.skin-option{background:linear-gradient(145deg,#30396d,#1b2145);border:2px solid #8997ff;border-radius:16px;padding:12px 8px;box-shadow:0 4px 0 #11142b;min-height:140px}.skin-option .skin-icon{font-size:38px;display:block;margin-bottom:5px}.skin-option b{display:block;color:#ffe45c}.skin-option small{display:block;font-size:11px;line-height:1.3;margin:5px 0 8px}.skin-option.owned{border-color:#62e6ac}.skin-option.equipped{border-color:#ffe45c;background:linear-gradient(145deg,#5b4c30,#26254b)}.mission-list{width:min(360px,92vw);display:grid;gap:10px;margin:12px 0}.mission-option{background:#292e59;border:2px solid #7784d8;box-shadow:0 4px 0 #11142b;text-align:left}.mission-option.active{border-color:#ffe14b;background:#3a3b69}.mission-option small{display:block;font-weight:500;opacity:.9;margin-top:4px}.secondary{background:linear-gradient(180deg,#737fe0,#414b9e);box-shadow:0 5px 0 #25275d,0 8px 16px #07091c44}.screen h1{font-size:clamp(24px,6vw,34px);text-shadow:0 3px 0 #242653}.hero-card{background:linear-gradient(145deg,#353d77,#20264b);border:2px solid #a9b7ff;border-radius:24px;box-shadow:0 8px 0 #10132d,0 0 25px #7185ff33}.pill{backdrop-filter:blur(8px);box-shadow:0 4px 14px #080a1d44}.action{border:3px solid #ffffffbb;box-shadow:0 5px 0 #25275d,0 0 18px #ffffff22}.super{background:linear-gradient(#d88bff,#7438dc);box-shadow:0 5px 0 #3d197c,0 0 20px #bc74ff66}
+#hud{position:absolute;top:0;left:0;right:0;padding:10px 12px;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none;z-index:2;text-shadow:0 2px 2px #222;font-weight:900}
+.pill{background:#202444d9;border:2px solid #ffffff44;border-radius:13px;padding:7px 10px;font-size:13px}.health{height:9px;width:120px;background:#5c2538;border-radius:8px;overflow:hidden;margin-top:5px}.health>i{display:block;height:100%;width:100%;background:#61ed72}
+#controls{position:absolute;bottom:18px;left:0;right:0;display:flex;justify-content:space-between;align-items:end;padding:0 18px;z-index:3;pointer-events:none}
+#stick{width:124px;height:124px;border-radius:50%;background:#15193477;border:3px solid #ffffff66;position:relative;pointer-events:auto;touch-action:none}
+#nub{width:48px;height:48px;position:absolute;left:35px;top:35px;border-radius:50%;background:#eaf7ffb8;border:3px solid white}
+.actions{display:flex;gap:10px;align-items:end;pointer-events:auto}.action{width:70px;height:70px;border-radius:50%;padding:5px;border:3px solid #fff9;font-size:12px;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.1;box-shadow:0 5px 0 #25275d}.super{width:82px;height:82px;background:linear-gradient(#b86bff,#7138d1);box-shadow:0 5px 0 #3d197c}.muted{opacity:.45}
+#toast{position:absolute;top:76px;left:50%;transform:translateX(-50%);background:#171a36e8;border:2px solid #ffffff55;border-radius:12px;padding:8px 12px;z-index:4;white-space:nowrap;font-weight:800;display:none}
+@media(max-height:500px){#stick{width:96px;height:96px}#nub{left:24px;top:24px;width:42px;height:42px}.action{width:58px;height:58px}.super{width:68px;height:68px}.screen{padding:10px}.hero{font-size:40px}}
+
+/* UPDATE 1.1 — fixed bot movement speed when chasing healing diamonds */
+#menu{justify-content:flex-start;gap:0;padding:clamp(14px,4vh,30px) 18px;background:radial-gradient(ellipse at 50% 0%,#5b68d9 0%,#29295f 38%,#111329 100%)}
+#menu:before{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(135deg,#ffffff08 0 2px,transparent 2px 22px);opacity:.45}
+.menu-top{position:relative;width:min(480px,100%);display:flex;align-items:center;justify-content:space-between;margin-bottom:clamp(8px,2vh,18px);font-size:11px;font-weight:1000;letter-spacing:2px;color:#b9c8ff}
+.version{border:1px solid #ffffff44;border-radius:999px;padding:6px 10px;background:#11152f88;color:#ffe45c;letter-spacing:1px}
+#menu .logo{position:relative;font-size:clamp(38px,11vw,67px);margin:0;text-align:center;transform:rotate(-2deg);filter:drop-shadow(0 8px 0 #15132d)}
+#menu .subtitle{position:relative;margin:12px 0 16px;color:#dce5ff;font-size:12px;letter-spacing:2px;text-transform:uppercase}
+.menu-showcase{position:relative;width:min(420px,100%);border:2px solid #a6b9ff;border-radius:25px;padding:13px 14px 14px;background:linear-gradient(145deg,#3a4c92ee,#202448f5);box-shadow:0 8px 0 #10132b,0 0 28px #6c7bff2a;margin-bottom:16px;overflow:hidden}
+.menu-showcase:after{content:"";position:absolute;width:170px;height:170px;right:-40px;top:-45px;border-radius:50%;background:#5ce5ff17;border:1px solid #7befff22}
+.showcase-head{position:relative;display:flex;align-items:center;justify-content:space-between;gap:8px;color:#c6d5ff;font-size:10px;font-weight:1000;letter-spacing:1.5px}
+.showcase-head strong{color:#75f0ff;background:#10152d99;padding:5px 8px;border-radius:8px}
+.menu-heroes{position:relative;display:flex;align-items:center;justify-content:center;gap:clamp(8px,4vw,24px);padding:9px 0 4px}
+.menu-hero{font-size:clamp(36px,11vw,54px);width:70px;height:70px;display:grid;place-items:center;border-radius:19px;background:linear-gradient(145deg,#ffffff22,#ffffff05);border:1px solid #ffffff30;box-shadow:inset 0 -5px #11142d44;transform:rotate(-4deg)}
+.menu-hero:nth-child(2){transform:translateY(-7px) scale(1.12);border-color:#ffe45c;background:linear-gradient(145deg,#ffe45c35,#ffffff08)}
+.menu-hero:nth-child(3){transform:rotate(4deg)}
+.showcase-caption{position:relative;color:#fff;text-align:center;font-weight:1000;font-size:13px;margin-top:8px}.showcase-caption span{color:#ffe45c}
+.menu-stats{position:relative;width:min(420px,100%);display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;margin-bottom:14px}
+.menu-stat{border:1px solid #ffffff2c;border-radius:14px;padding:8px 5px;background:#11152d99;text-align:center}.menu-stat b{display:block;color:#ffe45c;font-size:15px}.menu-stat small{display:block;font-size:9px;letter-spacing:1px;color:#c5ceef;font-weight:900;margin-top:2px}
+#menu .menu-buttons{position:relative;gap:9px;width:min(420px,100%);grid-template-columns:1fr 1fr}
+#menu .menu-buttons button{min-height:47px;padding:10px 8px;font-size:12px;border-radius:14px;letter-spacing:.3px}
+#menu #play{grid-column:1/-1;min-height:59px;font-size:19px;letter-spacing:1.2px;background:linear-gradient(180deg,#ffed65,#ff982e);box-shadow:0 6px 0 #a33f28,0 0 24px #ffbd4d55;color:#321c2b}
+#menu #soundToggle{grid-column:1/-1;min-height:39px}
+#menu .small{position:relative;margin-top:12px;font-size:10px}
+.bot-tag{font-size:9px;font-weight:1000;fill:white}
+@media(max-height:720px){#menu{padding-top:9px;padding-bottom:9px}#menu .logo{font-size:clamp(31px,8vw,47px)}#menu .subtitle{margin:7px 0 9px}.menu-showcase{padding:8px 12px;margin-bottom:9px}.menu-hero{height:48px;width:54px;font-size:35px}.menu-stats{margin-bottom:9px}.menu-stat{padding:5px}.menu-heroes{padding:4px 0 0}}
+
+
+/* INFINITY FIGHT 1.1.3 — complete NEON ARENA interface redesign */
+:root{--ink:#f5f7ff;--panel:#171d38;--gold:#ffd86b;--blue:#54e8ff;--pink:#ff5bc8;--line:#52648e}
+html,body{background:#080d1d;color:var(--ink);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;overscroll-behavior:none}
+button{min-height:48px;border:1px solid #ffffff30;border-radius:15px;background:linear-gradient(135deg,#ffdb70 0%,#ff8b48 100%);color:#21172d;box-shadow:0 4px 0 #a64b43,0 9px 22px #0005;font-weight:950;letter-spacing:.15px;transition:transform .12s,filter .12s,box-shadow .12s}
+button:active{transform:translateY(2px) scale(.99);filter:brightness(1.1);box-shadow:0 1px 0 #a64b43}
+button:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+button.secondary{color:#f5f7ff;background:linear-gradient(145deg,#26385f,#17213f);border-color:#5c80b7;box-shadow:0 4px 0 #0a1025,0 8px 20px #0004}
+.screen{padding:clamp(14px,3.5vw,26px);gap:10px;background:radial-gradient(ellipse at 50% -10%,#283f78 0%,#121a36 48%,#080d1d 100%);overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y}
+.screen:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.18;background:linear-gradient(115deg,transparent 0 47%,#77eaff10 48% 49%,transparent 50% 100%);background-size:34px 34px}
+.screen>*{position:relative;flex-shrink:0}
+#menu{justify-content:flex-start;gap:0;padding:calc(12px + env(safe-area-inset-top)) 16px calc(18px + env(safe-area-inset-bottom));background:radial-gradient(ellipse at 50% 0%,#304e91 0%,#172447 39%,#080d1d 100%)}
+#menu:before{position:absolute;inset:0;background:repeating-linear-gradient(135deg,#ffffff08 0 1px,transparent 1px 20px);opacity:.45}
+.menu-top{width:min(520px,100%);margin:0 auto 12px;color:#a9eaff;font-size:10px;letter-spacing:1.8px}
+.version{background:#091326;border:1px solid #50d9f677;color:#ffe38a;font-size:10px;padding:7px 10px;white-space:nowrap}
+#menu .logo{font-size:clamp(40px,11.8vw,70px);line-height:.94;letter-spacing:-2.5px;text-shadow:0 3px 0 #17142c,0 7px 0 #10152b,0 0 28px #59eaff30;filter:none;transform:none;margin:4px 0 0}
+#menu .logo span{color:#61eaff;text-shadow:0 0 22px #39dfff66}
+#menu .subtitle{font-size:clamp(10px,2.9vw,12px);line-height:1.4;letter-spacing:1.6px;color:#c5d9ff;margin:12px 0 17px}
+.menu-showcase{border:1px solid #66dcff88;border-radius:22px;background:linear-gradient(135deg,#263f70f5,#141c38f5);box-shadow:0 7px 0 #070c1c,0 0 30px #42cfff13;padding:14px;margin-bottom:13px}
+.menu-showcase:after{border-color:#60dfff20;background:#60dfff12}
+.showcase-head{font-size:10px;letter-spacing:1.2px;color:#c3e5ff}
+.showcase-head strong{color:#10192e;background:#62eaff;padding:6px 9px}
+.menu-hero{border-radius:17px;border:1px solid #82bfff50;background:linear-gradient(145deg,#ffffff19,#ffffff04);box-shadow:inset 0 -4px #070c1d55;transform:none}
+.menu-hero:nth-child(2){transform:translateY(-5px) scale(1.08);border-color:#ffe17b;background:linear-gradient(145deg,#ffe45b25,#ffffff07)}
+.showcase-caption{font-size:13px;line-height:1.35}.showcase-caption span{color:var(--blue)}
+.menu-stats{gap:6px;margin:0 auto 13px}
+.menu-stat{background:#0b1429c9;border:1px solid #6c8fbd55;border-radius:13px;padding:8px 3px;box-shadow:inset 0 1px #ffffff08}
+.menu-stat b{font-size:clamp(13px,3.8vw,17px);color:#71eaff}.menu-stat small{font-size:clamp(7px,2vw,9px);line-height:1.25;letter-spacing:.25px;color:#c0cde8}
+#menu .menu-buttons{gap:9px;width:min(460px,100%);margin:0 auto;grid-template-columns:repeat(2,minmax(0,1fr))}
+#menu .menu-buttons button{min-height:51px;padding:10px 7px;border-radius:14px;font-size:clamp(11px,3vw,13px);line-height:1.25;letter-spacing:0;overflow-wrap:anywhere}
+#menu #fightTab{grid-column:1/-1;min-height:60px;font-size:19px;letter-spacing:1px;background:linear-gradient(135deg,#6cf4ff,#5b9dff);color:#07182b;border-color:#b8faff;box-shadow:0 5px 0 #245c9a,0 0 24px #54dfff25}
+#menu #illusionEventBtn{background:linear-gradient(135deg,#8c6bff,#4a3da5);border-color:#c0adff;color:#fff;box-shadow:0 4px 0 #28205e}
+#menu #soundToggle{grid-column:1/-1;min-height:43px}
+#menu .small{width:min(460px,100%);max-width:460px;margin:12px auto 0;color:#aebfdf;font-size:10px;line-height:1.4}
+#menu>div[style*="НОВОСТИ INFINITY FIGHT"]{max-width:460px!important;width:100%;border:1px solid #617eb4!important;border-radius:18px!important;background:linear-gradient(135deg,#1b294c,#111a32)!important;padding:13px!important;box-shadow:0 5px 0 #070c1c}
+.screen h1{font-size:clamp(26px,7vw,38px);line-height:1.08;letter-spacing:-.6px;text-shadow:0 3px 0 #10152d;margin:8px 0 12px}
+.screen h2{color:#80edff}
+.screen p{line-height:1.5}
+.hero-card{max-width:480px;background:linear-gradient(145deg,#1d3156,#121a33);border:1px solid #6d9cc7;border-radius:21px;padding:17px;box-shadow:0 6px 0 #070c1c,0 0 22px #0002}
+.hero-card h2{color:#ffe38a}.hero-card p{line-height:1.5}
+.fighter-grid{width:min(500px,100%);grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;max-height:none;overflow:visible}
+.fighter-option,.skin-option,.mission-option{border:1px solid #5c83b9;border-radius:17px;background:linear-gradient(145deg,#1e3155,#111a32);box-shadow:0 4px 0 #080d1e;color:#f6f8ff;min-width:0}
+.fighter-option.active,.mission-option.active{border-color:#ffe17a;background:linear-gradient(145deg,#35466c,#182342)}
+.fighter-option b,.skin-option b{color:#83ecff;overflow-wrap:anywhere}.fighter-option small,.skin-option small{font-size:12px;line-height:1.4;overflow-wrap:anywhere}
+.skin-option{min-height:150px}.skin-option.owned{border-color:#62e6ac}.skin-option.equipped{border-color:#ffe45c;background:linear-gradient(145deg,#433d32,#17213d)}
+.row{width:min(500px,100%);gap:9px}.row button{flex:1 1 130px}
+input,textarea,select{font:inherit;max-width:100%;border-radius:12px!important}
+#hud{padding:calc(8px + env(safe-area-inset-top)) 8px 0;gap:5px;align-items:flex-start}#hud .pill{background:#0b1428ed;border:1px solid #8aa6cf66;border-radius:12px;padding:7px 8px;font-size:clamp(10px,2.6vw,13px);backdrop-filter:blur(10px)}
+#controls{bottom:calc(12px + env(safe-area-inset-bottom));padding:0 12px;align-items:end}
+#stick{width:clamp(94px,27vw,124px);height:clamp(94px,27vw,124px);border:2px solid #a4e8ff99;background:#0c183a88;backdrop-filter:blur(4px)}
+#nub{border-color:#c5f6ff;background:#7de9ffbb}
+.action{width:clamp(60px,17vw,74px);height:clamp(60px,17vw,74px);font-size:11px;background:linear-gradient(145deg,#347fbd,#1b426f);color:white}
+.super{width:clamp(70px,20vw,86px);height:clamp(70px,20vw,86px);background:linear-gradient(145deg,#cb81ff,#7434d0);color:white}
+#toast{top:calc(76px + env(safe-area-inset-top));max-width:92vw;white-space:normal;text-align:center;background:#101b35f5;border:1px solid #66eaff;border-radius:13px;box-shadow:0 6px 24px #0008}
+@media(max-width:390px){.menu-stats{gap:4px}.menu-stat{padding:7px 2px}.menu-stat small{letter-spacing:0}#menu .menu-buttons{gap:7px}#menu .menu-buttons button{font-size:11px;min-height:48px;padding:8px 5px}.menu-hero{width:58px;height:58px;font-size:38px}.screen{padding-left:12px;padding-right:12px}.fighter-grid{gap:8px}.fighter-option{padding:11px 6px}}
+@media(max-height:680px){#menu{padding-top:8px;padding-bottom:10px}#menu .subtitle{margin:7px 0 10px}.menu-showcase{padding:9px 12px;margin-bottom:9px}.menu-hero{height:48px;width:50px;font-size:32px}.menu-stats{margin-bottom:9px}.menu-stat{padding:5px 2px}#menu .menu-buttons{gap:6px}#menu .menu-buttons button{min-height:42px}#menu #fightTab{min-height:48px}#menu .small{margin-top:7px}}
+@media(min-width:700px){#menu .menu-buttons{grid-template-columns:repeat(3,minmax(0,1fr))}#menu #fightTab,#menu #soundToggle{grid-column:1/-1}#menu .menu-showcase,#menu .menu-stats{width:min(520px,100%)}.fighter-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+</style>
+</head>
+<body>
+<canvas id="game"></canvas>
+<div id="hud" class="hidden">
+  <div class="pill"><div id="mapName">🌿 Зелёная поляна</div><div class="health"><i id="hpbar"></i></div><div id="hptext">100 / 100</div></div>
+  <div class="pill">🏆 <span id="trophiesHud">0</span> &nbsp; 🟡 <span id="gcoinsHud">0</span> &nbsp; ⭐ <span id="score">0</span> &nbsp; ⏱ <span id="time">0:00</span><div id="missionInfo" style="font-size:11px;margin-top:4px">Бойцы: 10 / 10</div></div>
+  <div style="display:flex;gap:6px;pointer-events:auto"><button id="muteBtn" class="secondary" style="padding:7px 10px">🔊</button><button id="pauseBtn" style="padding:7px 12px">Ⅱ</button></div>
+</div>
+<div id="toast"></div>
+<div id="controls" class="hidden">
+  <div id="stick"><div id="nub"></div></div>
+  <div class="actions">
+    <button id="shoot" class="action">🔫<br>ОГОНЬ<br><small id="ammoLabel">3 / 3</small></button>
+    <button id="super" class="action super">⚡<br>СУПЕР</button>
+  </div>
+</div>
+<section id="menu" class="screen">
+  <div class="menu-top"><span>INFINITY BATTLE LAB</span><span class="version">UPDATE 1.1.3</span></div>
+  <div class="logo">INFINITY <span>FIGHT</span></div>
+  <div class="subtitle">⚡ АРЕНА • БОТЫ • СОБЫТИЯ</div>
+
+  <div class="menu-stats"><div class="menu-stat"><b id="trophyCount">0</b><small>🏆 ОБЩИЕ КУБКИ</small></div><div class="menu-stat"><b id="gcoinCount">0</b><small>🟡 GCOIN</small></div><div class="menu-stat"><b id="rubyCount">0</b><small>💎 РУБИНЫ</small></div></div>
+  <div class="menu-buttons">
+    <button id="fightTab">⚔️ БОЙ</button>
+<button id="dataTab" class="secondary">💾 ДАННЫЕ</button>
+    <button id="choose" class="secondary">🦸 ВЫБРАТЬ БОЙЦА</button>
+    <button id="skinsTab" class="secondary">🎨 МАГАЗИН СКИНОВ</button>
+    <button id="buyGhostBox" class="secondary">👻 ПРИЗРАЧНЫЙ ЯЩИК · 10 GCOIN</button>
+    <button id="infinityDropBtn" class="secondary">🌟 INFINITY DROP</button>
+    <button id="illusionEventBtn" class="secondary">👑 КОРОЛЕВСТВО ИЛЛЮЗИЙ · ДЕНЬ 1</button>
+    <button id="maps" class="secondary">🗺️ АРЕНЫ</button>
+    <button id="soundToggle" class="secondary">🔊 ЗВУК: ВКЛ</button>
+  </div>
+  <div style="width:min(340px,92vw);margin-top:12px;padding:14px;border:2px solid #ffe16b;border-radius:14px;background:linear-gradient(135deg,#3b3155,#252d52);text-align:left;box-sizing:border-box">
+    <div style="font-size:11px;font-weight:1000;color:#ffe16b;letter-spacing:1px;margin-bottom:5px">📰 НОВОСТИ INFINITY FIGHT</div>
+    <div style="font-size:19px;font-weight:1000;margin-bottom:6px">🖥️ Глитч и цифровые бойцы!</div>
+    <div style="font-size:12px;line-height:1.45;color:#e2e8f0">Открывай Глитча и .exe, собирай редкие скины и проходи событие «Королевство иллюзий».</div>
+    <div style="font-size:11px;font-weight:900;color:#ffe16b;margin-top:8px">⚡ ОБНОВЛЕНИЕ 1.1.3</div>
+  </div>
+  <div class="small">Фанатский прототип • версия 1.1.3 • Королевство иллюзий</div>
+</section>
+<section id="fightScreen" class="screen hidden">
+  <div class="menu-top"><span>⚔️ РЕЖИМЫ БОЯ</span><span class="version">UPDATE 1.1.3</span></div>
+  <h1>Выбери режим</h1>
+  <div class="menu-buttons">
+    <button data-mode="ffa">💥 КАЖДЫЙ САМ ЗА СЕБЯ<small style="display:block;font-size:12px;font-weight:500">Ровно 10 бойцов: каждый сражается со всеми.</small></button>
+    <button data-mode="hunter" class="secondary">🎯 ВСЕ ПРОТИВ ИГРОКА<small style="display:block;font-size:12px;font-weight:500">9 противников охотятся на тебя.</small></button>
+    <button data-mode="teams" class="secondary">🛡️ ДВОЙНАЯ БИТВА<small style="display:block;font-size:12px;font-weight:500">10 бойцов · 5 команд по 2 · союзники не наносят урон друг другу.</small></button>
+    <button id="play">▶ НАЧАТЬ БОЙ</button>
+    <button id="backFight" class="secondary">НАЗАД</button>
+  </div>
+  <div class="small" id="fightModeStatus">Выбран режим: Каждый сам за себя</div>
+</section>
+<section id="dataScreen" class="screen hidden">
+  <div class="menu-top"><span>💾 ДАННЫЕ И СОХРАНЕНИЯ</span><span class="version">UPDATE 1.1.3</span></div>
+  <h1>Данные игры</h1>
+  <p>Сохрани прогресс в файл, чтобы перенести рубины, Gcoin и бойцов в другую HTML-версию.</p>
+  <div class="menu-buttons">
+    <button id="exportSave">💾 СОХРАНИТЬ ПРОГРЕСС В ФАЙЛ</button>
+    <button id="importSave" class="secondary">📥 ПЕРЕНЕСТИ ПРОГРЕСС ИЗ ФАЙЛА</button>
+    <input id="saveFileInput" type="file" accept=".json,application/json" style="display:none">
+    <button id="backData" class="secondary">НАЗАД</button>
+  </div>
+</section>
+<section id="dropScreen" class="screen hidden">
+  <div class="menu-top"><span>INFINITY REWARDS</span><span class="version">UPDATE 1.1.3</span></div>
+  <div class="logo">INFINITY <span>DROP</span></div>
+  <div class="hero-card" id="dropCard">
+    <div class="hero" id="dropEmoji">🌟</div>
+    <h2 id="dropTitle">Infinity Drop</h2>
+    <p id="dropStatus">Нажми «Открыть», чтобы начать!</p>
+    <div style="font-size:18px;font-weight:1000;margin:12px 0">Текущая редкость: <span id="dropRarity" style="color:#cfd5ff">—</span></div>
+    <div id="dropAttempts" style="font-weight:900">Попытки повышения: 4</div>
+    <p id="dropRewardPreview">Common — 50 💎</p>
+  </div>
+  <div class="menu-buttons">
+    <button id="dropOpen">✨ ОТКРЫТЬ INFINITY DROP</button>
+    <button id="dropUpgrade" class="secondary" disabled>⬆️ ПОПЫТКА ПОВЫШЕНИЯ</button>
+    <button id="dropClaim" class="secondary" disabled>🎁 ЗАБРАТЬ НАГРАДУ</button>
+    <button id="dropBack" class="secondary">НАЗАД</button>
+  </div>
+  <div class="small">При каждой попытке есть шанс повысить редкость. Всего 4 попытки на один Infinity Drop.</div>
+</section>
+
+<section id="illusionEventScreen" class="screen hidden">
+  <div class="menu-top"><span>👑 INFINITY EVENTS</span><span class="version">UPDATE 1.1.3</span></div>
+  <div class="logo">КОРОЛЕВСТВО <span>ИЛЛЮЗИЙ</span></div>
+  <div class="hero-card" style="max-width:390px;border-color:#c77bff;background:linear-gradient(145deg,#512a82,#20183f)">
+    <div class="hero">🔮</div>
+    <h2 style="color:#e1b4ff">ДЕНЬ 1 · ВРАТА ИЛЛЮЗИЙ</h2>
+    <p>Королевство открылось! Войди на арену, сразись с противниками и открой магический стиль Фаера.</p>
+    <div style="font-size:14px;font-weight:900;margin:12px 0;color:#e1b4ff">🎁 СКИН СОБЫТИЯ: ФАЕР — ФИОЛЕТОВЫЙ МАГ</div>
+    <p>🎯 <b>Квест дня 1:</b> победи на арене и очисти Врата иллюзий.</p>
+    <p id="illusionQuestStatus" style="color:#e1b4ff;font-weight:900">🎁 Награда: эксклюзивный скин Фаера. Только за квест!</p>
+    <button id="illusionPlayDay1" class="secondary" style="width:100%;margin-top:10px">⚔️ ПРОЙТИ КВЕСТ: ДЕНЬ 1</button>
+  </div>
+  <div class="menu-buttons"><button id="backIllusion" class="secondary">НАЗАД</button></div>
+  <div class="small">Событие «Королевство иллюзий» · День 1. Прогресс и скин сохраняются в этом браузере.</div>
+</section>
+<section id="skinsScreen" class="screen hidden">
+  <div class="menu-top"><span>🎨 INFINITY STYLE</span><span class="version">UPDATE 1.1.3</span></div>
+  <h1>🎨 Магазин скинов</h1>
+  <p>Покупай особые облики за рубины 💎. Каждые 100 кубков бойца дают ⭐ звезду и открывают его золотой скин!</p>
+  <div id="skinGrid" class="fighter-grid" style="max-height:55vh"></div>
+  <div class="menu-buttons"><button id="backSkins" class="secondary">НАЗАД</button></div>
+  <div class="small" id="skinHint">Скины меняют внешний вид бойца, но не его характеристики.</div>
+</section>
+<section id="fighters" class="screen hidden">
+  <h1>🦸 Выбор бойца</h1>
+  <p>🏆 Кубки каждого бойца считаются отдельно. Общие кубки остаются в главном меню.</p>
+  <div class="fighter-grid" id="fighterGrid">
+    <button class="fighter-option" data-fighter="fire"><div class="emoji">🔥</div><b>Фаер</b><small>Нажми, чтобы открыть карточку</small></button>
+    <button class="fighter-option" data-fighter="witch"><div class="emoji">🧙‍♀️</div><b>Ведьма</b><small>Нажми, чтобы открыть карточку</small></button>
+    <button class="fighter-option" data-fighter="ghost"><div class="emoji">👻</div><b>Призрак 🔒</b><small>Нажми, чтобы открыть карточку</small></button>
+    <button class="fighter-option" data-fighter="exe"><div class="emoji">🖥️</div><b>.exe 🔒</b><small>Легендарный дроп · шанс 10%</small></button>
+    <button class="fighter-option" data-fighter="glitch"><div class="emoji">👾</div><b>Глитч 🔒</b><small>Эпик 20% · Мифик 40% · Легендарный 40%</small></button>
+  </div>
+  <div id="fighterCard" class="hero-card hidden" style="max-width:440px;max-height:58vh;overflow:auto">
+    <div id="fighterPreview" style="font-size:76px;text-align:center;filter:drop-shadow(0 0 12px #9beaff)">🔥</div>
+    <h2 id="fighterCardName">Фаер</h2><p id="fighterCardDesc">Быстрый боец</p>
+    <p>🏆 Кубки: <b id="cardTrophies">0</b>　⭐ Звёзды: <b id="cardStars">0</b></p>
+    <p>🎨 Выбери скин:</p><div id="cardSkinList" class="fighter-grid" style="max-height:none;margin:8px 0;width:100%"></div>
+    <div class="row"><button id="selectFighter">ВЫБРАТЬ БОЙЦА</button><button id="closeFighterCard" class="secondary">К СПИСКУ</button></div>
+  </div>
+  <div class="row"><button id="backF" class="secondary">НАЗАД</button></div>
+</section>
+<section id="mapsScreen" class="screen hidden">
+  <h1>🗺️ Выбери арену</h1>
+  <div class="menu-buttons">
+    <button data-map="meadow">🌿 Зелёная поляна · стены и кусты</button>
+    <button id="backM" class="secondary">НАЗАД</button>
+  </div>
+</section>
+<section id="modeScreen" class="screen hidden">
+  <h1>🎮 Выбери режим</h1>
+  <div class="menu-buttons">
+    <button data-mode="ffa">💥 КАЖДЫЙ САМ ЗА СЕБЯ<small style="display:block;font-size:12px;font-weight:500">Ровно 10 бойцов: каждый сражается со всеми.</small></button>
+    <button data-mode="hunter" class="secondary">🎯 ВСЕ ПРОТИВ ИГРОКА<small style="display:block;font-size:12px;font-weight:500">9 противников охотятся на тебя.</small></button>
+    <button data-mode="teams" class="secondary">🛡️ ДВОЙНАЯ БИТВА<small style="display:block;font-size:12px;font-weight:500">10 бойцов · 5 команд по 2 · союзники не наносят урон друг другу.</small></button>
+    <button id="backMode" class="secondary">НАЗАД</button>
+  </div>
+</section>
+<section id="pause" class="screen hidden">
+  <h1>Пауза</h1><div class="menu-buttons"><button id="resume">▶ ПРОДОЛЖИТЬ</button><button id="restart" class="secondary">↻ ЗАНОВО</button><button id="home" class="secondary">⌂ ГЛАВНОЕ МЕНЮ</button></div>
+</section>
+<section id="over" class="screen hidden">
+  <div class="logo" id="overTitle">БИТВА<br><span>ОКОНЧЕНА</span></div><p id="overText">Счёт: 0</p><div class="menu-buttons"><button id="again">↻ ЕЩЁ РАЗ</button><button id="overHome" class="secondary">⌂ ГЛАВНОЕ МЕНЮ</button></div>
+</section>
+<script>
+(()=>{
+const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
+const $=id=>document.getElementById(id);
+let W=innerWidth,H=innerHeight,dpr=1,screen='menu',map='meadow',selected=safeLoad('infinityFight_selectedFighter_v1','fire'),gameMode=safeLoad('infinityFight_gameMode_v1','ffa'),player,bots=[],bullets=[],particles=[],poisonZones=[],diamonds=[],helpers=[],diamondTimer=7,walls=[],score=0,elapsed=0,last=0,spawn=0,superCharge=0,move={x:0,y:0},joyId=null,joyCenter=null,shooting=false,pausedFrom='play';
+let onlineMode=false,remotePlayer=null;
+const TROPHY_KEY='brawlArena2D_trophies_v1';
+const GCOIN_KEY='infinityFight_gcoins_v1', GHOST_KEY='infinityFight_ghost_unlocked_v1';
+const KILLS_KEY='infinityFight_totalKills_v1', DROPS_KEY='infinityFight_dropsAvailable_v1';
+let totalKills=Math.max(0,Math.floor(Number(safeLoad(KILLS_KEY,'0'))||0));
+let dropsAvailable=Math.max(0,Math.floor(Number(safeLoad(DROPS_KEY,'0'))||0));
+function safeLoad(key,fallback){try{return localStorage.getItem(key) ?? fallback;}catch(e){return fallback;}}
+function safeSave(key,value){try{localStorage.setItem(key,String(value));return true;}catch(e){toast('⚠️ Браузер не разрешил сохранить прогресс');return false;}}
+if(!['ffa','hunter','teams'].includes(gameMode)){gameMode='ffa';safeSave('infinityFight_gameMode_v1','ffa');}
+let gcoins=Math.max(0,Math.floor(Number(safeLoad(GCOIN_KEY,'0'))||0));
+const RUBY_KEY='infinityFight_rubies_v1';let rubies=Math.max(0,Math.floor(Number(safeLoad(RUBY_KEY,'0'))||0));
+const SKINS_KEY='infinityFight_skins_v1';
+const ILLUSION_QUEST_KEY='infinityFight_illusion_day1_complete_v1';
+const ILLUSION_ACTIVE_KEY='infinityFight_illusion_day1_active_v1';
+let illusionQuestActive=false;
+const SKIN_LIST=[
+ {id:'fire_ice',fighter:'fire',name:'ЛЕДЯНОЙ ФАЕР',icon:'🧊',price:1000,body:'#2e91c7',trim:'#baf7ff',flame:'#ffffff',desc:'Ледяное пламя'},
+ {id:'fire_illusion',fighter:'fire',name:'ФАЕР — ФИОЛЕТОВЫЙ МАГ',icon:'🧙‍♂️',price:1000,body:'#6425a8',trim:'#d6a2ff',flame:'#c56bff',desc:'Эксклюзивный скин события «Королевство иллюзий»'},
+ {id:'witch_angel',fighter:'witch',name:'АНГЕЛ ВЕДЬМА',icon:'😇',price:750,body:'#f4e8ff',trim:'#ffe78a',flame:'#ffffff',desc:'Светлая магия и ангельское сияние'},
+ {id:'ghost_demon',fighter:'ghost',name:'ДЕМОН ПРИЗРАК',icon:'😈',price:1100,body:'#7c263d',trim:'#ff6b48',flame:'#ffb04a',desc:'Демонический призрачный плащ'},
+ {id:'exe_electric',fighter:'exe',name:'ЭЛЕКТРИЧЕСКИЙ .EXE',icon:'⚡',price:2500,body:'#17264f',trim:'#83f7ff',flame:'#42c8ff',desc:'Электрический корпус и голубые цифровые импульсы'},
+ {id:'glitch_void',fighter:'glitch',name:'ГЛИТЧ — ПУСТОТА',icon:'🌀',price:1800,body:'#28113d',trim:'#e879ff',flame:'#ff3bf5',desc:'Пульсирующий цифровой разлом'},
+ {id:'fire_gold',fighter:'fire',name:'ЗОЛОТОЙ ФАЕР',icon:'🌟',price:0,body:'#f6c844',trim:'#fff2a1',flame:'#fff8d6',desc:'Награда за 100 кубков на Фаере',gold:true},
+ {id:'witch_gold',fighter:'witch',name:'ЗОЛОТАЯ ВЕДЬМА',icon:'🌟',price:0,body:'#e9bd42',trim:'#fff1a1',flame:'#fff8d6',desc:'Награда за 100 кубков на Ведьме',gold:true},
+ {id:'ghost_gold',fighter:'ghost',name:'ЗОЛОТОЙ ПРИЗРАК',icon:'🌟',price:0,body:'#f7c94b',trim:'#fff1a1',flame:'#fff7d1',desc:'Награда за 100 кубков на Призраке',gold:true},
+ {id:'exe_gold',fighter:'exe',name:'ЗОЛОТОЙ .EXE',icon:'👑',price:0,body:'#e9c94b',trim:'#fff3a1',flame:'#ffe45c',desc:'Награда за 100 кубков на .exe',gold:true},
+ {id:'glitch_gold',fighter:'glitch',name:'ЗОЛОТОЙ ГЛИТЧ',icon:'👑',price:0,body:'#e9c94b',trim:'#fff3a1',flame:'#ffe45c',desc:'Награда за 100 кубков на Глитче',gold:true}
+];
+function loadSkinData(){try{const d=JSON.parse(safeLoad(SKINS_KEY,'{}'));return {owned:Array.isArray(d.owned)?d.owned.filter(x=>SKIN_LIST.some(s=>s.id===x)):[],equipped:d.equipped&&typeof d.equipped==='object'?d.equipped:{}};}catch(e){return {owned:[],equipped:{}};}}
+let skinData=loadSkinData();
+function skinOwned(id){return skinData.owned.includes(id);}
+function equippedSkin(fighter=selected){const id=skinData.equipped[fighter];return SKIN_LIST.find(s=>s.id===id&&s.fighter===fighter&&skinOwned(id))||null;}
+function saveSkinData(){safeSave(SKINS_KEY,JSON.stringify(skinData));}
+function syncGoldenSkins(){let changed=false;for(const fighter of ['fire','witch','ghost','exe','glitch']){if((fighterTrophies[fighter]||0)>=100){const id=fighter+'_gold';if(!skinData.owned.includes(id)){skinData.owned.push(id);changed=true;}}}if(changed)saveSkinData();return changed;}
+
+let ghostUnlocked=safeLoad(GHOST_KEY,'0')==='1';
+const EXE_KEY='infinityFight_exe_unlocked_v1';
+let exeUnlocked=safeLoad(EXE_KEY,'0')==='1';
+const GLITCH_KEY='infinityFight_glitch_unlocked_v1';
+let glitchUnlocked=safeLoad(GLITCH_KEY,'0')==='1';
+function saveGlitchUnlocked(){if(glitchUnlocked)safeSave(GLITCH_KEY,'1');}
+addEventListener('pagehide',saveGlitchUnlocked);
+function saveExeUnlocked(){if(exeUnlocked)safeSave(EXE_KEY,'1');}
+// Keep the unlocked fighter in localStorage across reloads and page closes.
+function saveGhostUnlocked(){if(ghostUnlocked)safeSave(GHOST_KEY,'1');}
+addEventListener('pagehide',saveGhostUnlocked);addEventListener('pagehide',saveExeUnlocked);
+addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'){saveGhostUnlocked();saveExeUnlocked();}});
+function loadTrophies(){try{return Math.max(0,Math.floor(Number(localStorage.getItem(TROPHY_KEY))||0));}catch(e){return 0;}}
+let trophies=loadTrophies();
+function saveTrophies(){try{localStorage.setItem(TROPHY_KEY,String(trophies));}catch(e){toast('⚠️ Браузер не разрешил сохранить кубки');}}
+const FIGHTER_TROPHIES_KEY='infinityFight_fighterTrophies_v1';
+function loadFighterTrophies(){try{const d=JSON.parse(safeLoad(FIGHTER_TROPHIES_KEY,'{}'));return {fire:Math.max(0,Math.floor(Number(d.fire)||0)),witch:Math.max(0,Math.floor(Number(d.witch)||0)),ghost:Math.max(0,Math.floor(Number(d.ghost)||0)),exe:Math.max(0,Math.floor(Number(d.exe)||0)),glitch:Math.max(0,Math.floor(Number(d.glitch)||0))};}catch(e){return {fire:0,witch:0,ghost:0,exe:0,glitch:0};}}
+let fighterTrophies=loadFighterTrophies();
+function saveFighterTrophies(){safeSave(FIGHTER_TROPHIES_KEY,JSON.stringify(fighterTrophies));}
+function refreshFighterTrophies(){document.querySelectorAll('[data-fighter-trophies]').forEach(el=>{el.textContent=String(fighterTrophies[el.dataset.fighterTrophies]||0);});document.querySelectorAll('[data-fighter-stars]').forEach(el=>{el.textContent=String(Math.floor((fighterTrophies[el.dataset.fighterStars]||0)/100));});syncGoldenSkins();if(typeof refreshFighterCard==='function'&&!$('fighterCard').classList.contains('hidden'))refreshFighterCard();}
+function makePortableSave(){return {game:'INFINITY_FIGHT',saveVersion:3,createdAt:new Date().toISOString(),rubies,gcoins,ghostUnlocked,exeUnlocked,glitchUnlocked,trophies,fighterTrophies,totalKills,dropsAvailable,selected,map,gameMode,skinData};}
+function applyPortableSave(data){
+ if(!data||data.game!=='INFINITY_FIGHT')throw new Error('Это не сохранение INFINITY FIGHT');
+ const num=(v,old=0)=>Math.max(0,Math.floor(Number(v??old)||0));
+ rubies=num(data.rubies,rubies);gcoins=num(data.gcoins,gcoins);ghostUnlocked=Boolean(data.ghostUnlocked)||safeLoad(GHOST_KEY,'0')==='1';exeUnlocked=Boolean(data.exeUnlocked)||safeLoad(EXE_KEY,'0')==='1';saveExeUnlocked();glitchUnlocked=Boolean(data.glitchUnlocked)||safeLoad(GLITCH_KEY,'0')==='1';saveGlitchUnlocked();
+ trophies=num(data.trophies,trophies);if(data.fighterTrophies&&typeof data.fighterTrophies==='object'){fighterTrophies={fire:num(data.fighterTrophies.fire),witch:num(data.fighterTrophies.witch),ghost:num(data.fighterTrophies.ghost),exe:num(data.fighterTrophies.exe),glitch:num(data.fighterTrophies.glitch)};saveFighterTrophies();}totalKills=num(data.totalKills,totalKills);dropsAvailable=num(data.dropsAvailable,dropsAvailable);
+ if(['fire','witch','ghost','exe','glitch'].includes(data.selected)&& (data.selected!=='ghost'||ghostUnlocked) && (data.selected!=='exe'||exeUnlocked) && (data.selected!=='glitch'||glitchUnlocked))selected=data.selected;
+ if(data.skinData&&typeof data.skinData==='object'){skinData={owned:Array.isArray(data.skinData.owned)?data.skinData.owned.filter(x=>SKIN_LIST.some(s=>s.id===x)):[],equipped:data.skinData.equipped&&typeof data.skinData.equipped==='object'?data.skinData.equipped:{}};saveSkinData();}
+ syncGoldenSkins();if(['meadow'].includes(data.map))map=data.map;
+ if(['ffa','hunter'].includes(data.gameMode))gameMode=data.gameMode;
+ safeSave(RUBY_KEY,rubies);safeSave(GCOIN_KEY,gcoins);safeSave(GHOST_KEY,ghostUnlocked?'1':'0');safeSave(EXE_KEY,exeUnlocked?'1':'0');safeSave(GLITCH_KEY,glitchUnlocked?'1':'0');safeSave(TROPHY_KEY,trophies);safeSave(KILLS_KEY,totalKills);safeSave(DROPS_KEY,dropsAvailable);
+ safeSave('infinityFight_selectedFighter_v1',selected);map='meadow';safeSave('infinityFight_map_v1','meadow');safeSave('infinityFight_gameMode_v1',gameMode);
+ refreshTrophies();refreshFighters();refreshSkins();updateFightModeStatus();
+}
+
+function refreshTrophies(){updateDropButton();const rubyEl=$('rubyCount');if(rubyEl)rubyEl.textContent=String(rubies);const el=$('trophyCount');if(el)el.textContent=String(trophies);const hud=$('trophiesHud');if(hud)hud.textContent=String(trophies);const gc=$('gcoinCount');if(gc)gc.textContent=String(gcoins);const gh=$('gcoinsHud');if(gh)gh.textContent=String(gcoins);const box=$('buyGhostBox');if(box)box.textContent=ghostUnlocked?'👻 ПРИЗРАК ОТКРЫТ':'👻 ПРИЗРАЧНЫЙ ЯЩИК · 10 GCOIN';}
+function awardGcoin(){gcoins++;safeSave(GCOIN_KEY,gcoins);refreshTrophies();toast('🟡 +1 Gcoin! Всего: '+gcoins);}
+function awardTrophy(){trophies++;saveTrophies();const beforeStars=Math.floor((fighterTrophies[selected]||0)/100);fighterTrophies[selected]=(fighterTrophies[selected]||0)+1;saveFighterTrophies();refreshFighterTrophies();const afterStars=Math.floor(fighterTrophies[selected]/100);if(afterStars>beforeStars){syncGoldenSkins();toast('⭐ '+afterStars+' звезда! Получен золотой скин для бойца!');}totalKills++;safeSave(KILLS_KEY,totalKills);if(totalKills%20===0){dropsAvailable++;safeSave(DROPS_KEY,dropsAvailable);toast('🌟 INFINITY DROP получен за 20 убийств!');}refreshTrophies();awardGcoin();}
+
+// Synthesized audio: no downloads or external sound files required.
+let audioCtx=null, soundOn=true, menuMusicTimer=null, musicStep=0;
+function audioReady(){if(!audioCtx){const AC=window.AudioContext||window.webkitAudioContext;if(AC)audioCtx=new AC();}if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume();return audioCtx;}
+function tone(freq,duration,type='sine',volume=.045,when=0,endFreq=null){
+ const ac=audioReady();if(!ac||!soundOn)return;
+ const o=ac.createOscillator(),g=ac.createGain(),t=ac.currentTime+when;
+ o.type=type;o.frequency.setValueAtTime(Math.max(30,freq),t);
+ if(endFreq)o.frequency.exponentialRampToValueAtTime(Math.max(30,endFreq),t+duration);
+ g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(volume,t+.012);g.gain.exponentialRampToValueAtTime(.0001,t+duration);
+ o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+duration+.03);
+}
+function sfxAttack(){tone(520,.075,'square',.025,0,240);tone(170,.08,'triangle',.018,.025,100);}
+function sfxSuper(){tone(220,.28,'sawtooth',.035,0,880);tone(660,.3,'sine',.03,.07,1320);tone(990,.22,'triangle',.025,.17,440);}
+function sfxHit(){tone(150,.09,'triangle',.025,0,70);}
+function sfxEnemyShot(){tone(280,.08,'square',.012,0,140);}
+function sfxWin(){[523,659,784,1047].forEach((f,i)=>tone(f,.24,'triangle',.04,i*.12));}
+function sfxLose(){[392,330,262,196].forEach((f,i)=>tone(f,.28,'triangle',.035,i*.15));}
+function sfxClick(){tone(640,.055,'sine',.025,0,850);}
+function stopMenuMusic(){if(menuMusicTimer){clearInterval(menuMusicTimer);menuMusicTimer=null;}}
+function startMenuMusic(){
+ stopMenuMusic();if(!soundOn)return;audioReady();musicStep=0;
+ // New louder energetic arcade loop, synthesized locally (no external audio files).
+ const notes=[523,659,784,1047,784,659,587,784,698,880,1047,880,784,659,523,587];
+ menuMusicTimer=setInterval(()=>{if(!soundOn||screen!=='menu'){stopMenuMusic();return;}const f=notes[musicStep%notes.length];tone(f,.24,'sawtooth',.052);if(musicStep%2===0)tone(f/2,.30,'triangle',.032,.015);if(musicStep%4===0)tone(110,.18,'square',.018,.01,70);musicStep++;},220);
+}
+function setSound(on){soundOn=on;$('soundToggle').textContent=on?'🔊 ЗВУК: ВКЛ':'🔇 ЗВУК: ВЫКЛ';$('muteBtn').textContent=on?'🔊':'🔇';if(on&&screen==='menu')startMenuMusic();else if(!on)stopMenuMusic();}
+
+const maps={meadow:{name:'🌿 Зелёная поляна · стены и кусты',bg:'#58b86a',ground:'#73cf7c',wall:'#286a4a',accent:'#9de56e'}};
+let bushes=[];
+function resize(){dpr=Math.min(devicePixelRatio||1,1.5);W=innerWidth;H=innerHeight;canvas.width=W*dpr;canvas.height=H*dpr;canvas.style.width=W+'px';canvas.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0);if(player){player.x=Math.max(30,Math.min(W-30,player.x));player.y=Math.max(70,Math.min(H-40,player.y));}buildWalls();}
+addEventListener('resize',resize);
+function show(id){['menu','fightScreen','dataScreen','fighters','mapsScreen','modeScreen','pause','over','dropScreen','skinsScreen','illusionEventScreen'].forEach(x=>$(x).classList.toggle('hidden',x!==id));}
+function buildWalls(){
+ walls=[];bushes=[];const s=Math.max(27,Math.min(44,W*.075));
+ const pattern=[[.20,.27],[.50,.22],[.80,.29],[.32,.50],[.68,.52],[.20,.74],[.50,.78],[.80,.73]];
+ for(const [x,y] of pattern)walls.push({x:W*x-s/2,y:H*y-s/2,w:s,h:s});
+ // A few extra broad cover walls while leaving a clear central route.
+ walls=walls.filter(a=>Math.hypot(a.x+a.w/2-W/2,a.y+a.h/2-H*.62)>54);
+ const bushPattern=[[.12,.42],[.40,.34],[.58,.40],[.87,.45],[.14,.62],[.43,.67],[.63,.69],[.88,.61],[.34,.84],[.70,.84]];
+ const br=Math.max(18,Math.min(28,W*.045));
+ for(const [x,y] of bushPattern){const bx=W*x,by=H*y;if(!walls.some(a=>bx>a.x-24&&bx<a.x+a.w+24&&by>a.y-24&&by<a.y+a.h+24))bushes.push({x:bx,y:by,r:br});}
+}
+function setOnlineStatus(message){const el=$('onlineStatus');if(el)el.textContent='Статус: '+message;}
+function sendNet(packet){}
+function clearOnlineConnectTimer(){}
+function cleanupNetwork(){onlineMode=false;remotePlayer=null;}
+function sendOnlineState(now){}
+
+function start(){stopMenuMusic();audioReady();screen='play';show('menu');$('menu').classList.add('hidden');$('hud').classList.remove('hidden');$('controls').classList.remove('hidden');$('mapName').textContent=maps[map].name+' · '+(gameMode==='online'?'ДУЭЛЬ':gameMode==='teams'?'ДВОЙНАЯ БИТВА':gameMode==='ffa'?'Каждый сам за себя':'Все против игрока');score=0;elapsed=0;spawn=0;superCharge=0;bullets=[];bots=[];particles=[];poisonZones=[];diamonds=[];helpers=[];diamondTimer=7;ammo=selected==='exe'?5:3;reloadTimer=0;fireTimer=0;updateAmmoUI();const stats={fire:{hp:90,speed:200,damage:22},witch:{hp:95,speed:155,damage:27},ghost:{hp:100,speed:185,damage:24},exe:{hp:88,speed:222,damage:8},glitch:{hp:92,speed:210,damage:14}}[selected]||{hp:90,speed:200,damage:22};player={x:W/2,y:H*.62,r:17,hp:stats.hp,maxHp:stats.hp,speed:stats.speed,damage:stats.damage,hit:0,superCd:0,team:0};buildWalls();botSerial=0;if(!onlineMode){const count=gameMode==='teams'?9:9;for(let i=0;i<count;i++)spawnBot();if(gameMode==='teams'){player.team=0;for(let i=0;i<bots.length;i++)bots[i].team=Math.floor((i+1)/2);$('missionInfo').textContent='5 КОМАНДЫ · 10 БОЙЦОВ';}else{for(const b of bots)b.team=b.id+1;$('missionInfo').textContent='Бойцы: 10 / 10';}}else{$('missionInfo').textContent='ДУЭЛЬ: 2 ИГРОКА';}last=performance.now();}
+function end(win){if(screen!=='play')return;let questReward='';if(win&&safeLoad(ILLUSION_ACTIVE_KEY,'0')==='1'&&safeLoad(ILLUSION_QUEST_KEY,'0')!=='1'){if(!skinData.owned.includes('fire_illusion'))skinData.owned.push('fire_illusion');skinData.equipped.fire='fire_illusion';saveSkinData();safeSave(ILLUSION_QUEST_KEY,'1');safeSave(ILLUSION_ACTIVE_KEY,'0');illusionQuestActive=false;questReward='\n\n🎁 КВЕСТ ПРОЙДЕН! Получен скин Фаер — Фиолетовый маг!';refreshSkins();}if(win)sfxWin();else sfxLose();screen='over';$('hud').classList.add('hidden');$('controls').classList.add('hidden');$('overTitle').innerHTML=win?'ПОБЕДА!<br><span>АРЕНА ОЧИЩЕНА</span>':'БИТВА<br><span>ОКОНЧЕНА</span>';$('overText').textContent=(gameMode==='online'?'Дуэль с другом':gameMode==='teams'?'Двойная битва':gameMode==='ffa'?'Каждый сам за себя':'Все против игрока')+' · Счёт: '+score+' · '+(win?'Победа!':'Попробуй ещё раз')+questReward;show('over');}
+const botTypes={fire:{name:'Фаер',emoji:'🔥',color:'#f07832',hp:95,speed:92,damage:7,range:145,rate:.32,shot:220,style:'rush'},witch:{name:'Ведьма',emoji:'🧙‍♀️',color:'#54d65b',hp:95,speed:58,damage:8,range:260,rate:1,shot:205,style:'witch'},ghost:{name:'Призрак',emoji:'👻',color:'#b8f4ff',hp:100,speed:85,damage:8,range:180,rate:.35,shot:240,style:'rush'},exe:{name:'.exe',emoji:'🖥️',color:'#39ffae',hp:88,speed:115,damage:4,range:230,rate:.16,shot:285,style:'rush'},glitch:{name:'Глитч',emoji:'👾',color:'#ff3bf5',hp:92,speed:110,damage:6,range:245,rate:.22,shot:300,style:'sniper'}};
+let botSerial=0;
+function spawnBot(){if(!player||bots.length>=9)return;let edge=Math.floor(Math.random()*4),x,y;if(edge===0){x=25;y=90+Math.random()*(H-140)}else if(edge===1){x=W-25;y=90+Math.random()*(H-140)}else if(edge===2){x=30+Math.random()*(W-60);y=85}else{x=30+Math.random()*(W-60);y=H-35}
+ // UPDATE 1.1.5: enemy roster is independent of the player's unlocks.
+ // Ghost can spawn as a bot even when ghostUnlocked is false.
+ const roll=Math.random();const type=roll<.01?'exe':roll<.025?'glitch':['fire','witch','ghost'][Math.floor(Math.random()*3)],t=botTypes[type];
+ // Enemies have the same HP as the selected player.
+ const equalHp=player.maxHp;
+ const availableSkins=SKIN_LIST.filter(s=>s.fighter===type);let botSkin=null;if(Math.random()<.58&&availableSkins.length){botSkin=availableSkins[Math.floor(Math.random()*availableSkins.length)];}bots.push({x,y,r:type==='tank'?19:16,type,name:t.name,emoji:t.emoji,color:t.color,skin:botSkin,hp:equalHp,maxHp:equalHp,speed:type==='exe'?Math.min(245,player.speed+24):type==='glitch'?Math.min(232,player.speed+12):player.speed,damage:t.damage,range:t.range,rate:t.rate,shot:t.shot,style:t.style,cd:.08+Math.random()*.16,ammo:3,reloadTimer:0,hit:0,phase:Math.random()*6.28,id:botSerial++});}
+function collideWall(x,y,r){return walls.some(a=>x+r>a.x&&x-r<a.x+a.w&&y+r>a.y&&y-r<a.y+a.h);}
+function moveEntity(o,dx,dy){let nx=Math.max(o.r,Math.min(W-o.r,o.x+dx)),ny=Math.max(o.r+58,Math.min(H-o.r, o.y+dy));if(!collideWall(nx,o.y,o.r))o.x=nx;if(!collideWall(o.x,ny,o.r))o.y=ny;}
+let ammo=3,reloadTimer=0,fireTimer=0;
+function updateAmmoUI(){const el=$('ammoLabel');if(!el)return;el.textContent=selected==='exe'?(reloadTimer>0?'↻ '+Math.max(0,reloadTimer).toFixed(1)+'с':ammo+' / 5'):selected==='witch'?(fireTimer>0?'⚗️ '+Math.max(0,fireTimer).toFixed(1)+'с':'⚗️ ГОТОВО'):reloadTimer>0?'↻ '+Math.max(0,reloadTimer).toFixed(1)+'с':ammo+' / 3';}
+function fire(){if(screen!=='play'||!player)return;const isExe=selected==='exe';if(selected!=='witch'&&(reloadTimer>0||ammo<=0))return;if(selected!=='witch')ammo--;sfxAttack();let target=onlineMode&&remotePlayer?remotePlayer:bots.filter(b=>b.hp>0&&!(gameMode==='teams'&&b.team===player.team)).sort((a,b)=>Math.hypot(a.x-player.x,a.y-player.y)-Math.hypot(b.x-player.x,b.y-player.y))[0];let a=target?Math.atan2(target.y-player.y,target.x-player.x):0;if(selected==='witch'){const speed=315;const shot={x:player.x+Math.cos(a)*20,y:player.y+Math.sin(a)*20,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,r:9,team:'p',ownerTeam:player.team,life:1.25,damage:player.damage,potion:true};bullets.push(shot);if(onlineMode)sendNet({type:'shot',x:shot.x/W,y:shot.y/H,vx:shot.vx/W,vy:shot.vy/H,r:shot.r,life:shot.life,damage:shot.damage,potion:true});player.hit=.12;toast('🧪 Зелёное зелье!');updateAmmoUI();return;}const isGlitch=selected==='glitch';const count=isExe?4:isGlitch?3:1,spread=isExe?.16:isGlitch?.22:0;for(let n=0;n<count;n++){let offset=count===1?0:(n-(count-1)/2)*spread,ang=a+offset,speed=isExe?520:isGlitch?480:430;const shot={x:player.x+Math.cos(ang)*20,y:player.y+Math.sin(ang)*20,vx:Math.cos(ang)*speed,vy:Math.sin(ang)*speed,r:(isExe?8:isGlitch?7:5),team:'p',ownerTeam:player.team,life:.8,damage:isGlitch?Math.max(8,player.damage*.7):player.damage,binary:isExe,binaryChar:Math.random()<.5?'0':'1',glitch:isGlitch,glitchChar:['0','1','█','░'][Math.floor(Math.random()*4)]};bullets.push(shot);if(onlineMode)sendNet({type:'shot',x:shot.x/W,y:shot.y/H,vx:shot.vx/W,vy:shot.vy/H,r:shot.r,life:shot.life,damage:shot.damage,potion:false,binary:isExe,binaryChar:shot.binaryChar,glitch:isGlitch,glitchChar:shot.glitchChar});}player.hit=.12;if(selected!=='witch'&&ammo===0){reloadTimer=isExe?1:3;toast(isExe?'🖥️ .exe перезаряжается — 1 секунда':'🔄 Перезарядка — 3 секунды');}updateAmmoUI();}
+function superAttack(){
+ if(onlineMode){toast('⚡ Онлайн-суператаки добавим следующим этапом!');return;}
+ if(screen!=='play'||superCharge<100)return;
+ superCharge=0;sfxSuper();
+ const alive=bots.filter(b=>b.hp>0&&!(gameMode==='teams'&&b.team===player.team));
+ if(selected==='fire'){
+   // Fire: dash toward the nearest enemy and burn enemies near the landing point.
+   const target=alive.sort((a,b)=>Math.hypot(a.x-player.x,a.y-player.y)-Math.hypot(b.x-player.x,b.y-player.y))[0];
+   let dx=move.x,dy=move.y;
+   if(Math.hypot(dx,dy)<.15&&target){const d=Math.hypot(target.x-player.x,target.y-player.y)||1;dx=(target.x-player.x)/d;dy=(target.y-player.y)/d;}
+   if(Math.hypot(dx,dy)<.15)dx=1;
+   const oldX=player.x,oldY=player.y;
+   for(let step=1;step<=8;step++){const nx=oldX+dx*26*step,ny=oldY+dy*26*step;if(nx<player.r||nx>W-player.r||ny<player.r+58||ny>H-player.r||collideWall(nx,ny,player.r))break;player.x=nx;player.y=ny;}
+   particles.push({x:oldX,y:oldY,vx:0,vy:0,life:.35,r:18,flame:true});
+   particles.push({x:player.x,y:player.y,vx:0,vy:0,life:.45,r:25,flame:true});
+   for(const b of alive){if(Math.hypot(b.x-player.x,b.y-player.y)<72){const wasAlive=b.hp>0;b.hp-=55;b.hit=.2;if(wasAlive&&b.hp<=0)awardTrophy();}}
+   toast('🔥 Фаер: ОГНЕННЫЙ РЫВОК!');
+ }else if(selected==='tank'){
+   // Tank: a heavy close-range shockwave with a larger radius and knockback.
+   particles.push({x:player.x,y:player.y,r:8,max:Math.min(W,H)*.52,life:.65,ring:true,tankRing:true});
+   for(const b of alive){const d=Math.hypot(b.x-player.x,b.y-player.y);if(d<Math.min(W,H)*.48){const wasAlive=b.hp>0;b.hp-=68;b.hit=.2;if(wasAlive&&b.hp<=0)awardTrophy();const a=Math.atan2(b.y-player.y,b.x-player.x);b.x+=Math.cos(a)*115;b.y+=Math.sin(a)*115;}}
+   toast('🛡️ Танк: УДАРНАЯ ВОЛНА!');
+ }else if(selected==='witch'){
+   // Witch: the red super-potion always lands in the center of the arena.
+   const tx=W/2,ty=(H+55)/2,dx=tx-player.x,dy=ty-player.y,d=Math.hypot(dx,dy)||1,speed=440;
+   bullets.push({x:player.x,y:player.y-8,vx:dx/d*speed,vy:dy/d*speed,r:13,team:'p',life:d/speed+.2,damage:0,superPotion:true,targetX:tx,targetY:ty});
+   toast('🧙‍♀️ Красное зелье летит в центр!');
+ }else if(selected==='ghost'){
+   // Ghost summons a temporary ally that chases and fires at opponents.
+   helpers.push({x:player.x-26,y:player.y-18,r:14,life:8,cd:.15,phase:Math.random()*6.28});
+   particles.push({x:player.x,y:player.y,r:10,max:60,life:.5,ring:true,ghostRing:true});
+   toast('👻 Призрачный помощник призван на 8 секунд!');
+ }else if(selected==='glitch'){
+   const target=alive.sort((a,b)=>Math.hypot(a.x-player.x,a.y-player.y)-Math.hypot(b.x-player.x,b.y-player.y))[0];
+   let dx=move.x,dy=move.y;if(Math.hypot(dx,dy)<.15&&target){const d=Math.hypot(target.x-player.x,target.y-player.y)||1;dx=-(target.x-player.x)/d;dy=-(target.y-player.y)/d;}if(Math.hypot(dx,dy)<.15)dx=1;
+   const ox=player.x,oy=player.y;for(let step=1;step<=6;step++){const nx=ox+dx*22*step,ny=oy+dy*22*step;if(nx<player.r||nx>W-player.r||ny<player.r+58||ny>H-player.r||collideWall(nx,ny,player.r))break;player.x=nx;player.y=ny;}
+   particles.push({x:ox,y:oy,r:8,max:52,life:.45,ring:true,glitchRing:true});particles.push({x:player.x,y:player.y,r:8,max:75,life:.55,ring:true,glitchRing:true});for(const b of alive){if(Math.hypot(b.x-player.x,b.y-player.y)<85){const wasAlive=b.hp>0;b.hp-=42;b.hit=.2;if(wasAlive&&b.hp<=0)awardTrophy();}}toast('👾 Глитч: ТЕЛЕПОРТ И ЦИФРОВОЙ ВЗРЫВ!');
+ }else{
+   // Legacy fallback pulse.
+   particles.push({x:player.x,y:player.y,r:8,max:Math.min(W,H)*.55,life:.5,ring:true});
+   for(const b of alive){const d=Math.hypot(b.x-player.x,b.y-player.y);if(d<Math.min(W,H)*.55){const wasAlive=b.hp>0;b.hp-=45;b.hit=.2;if(wasAlive&&b.hp<=0)awardTrophy();const a=Math.atan2(b.y-player.y,b.x-player.x);b.x+=Math.cos(a)*75;b.y+=Math.sin(a)*75;}}
+   toast(selected==='exe'?'🖥️ .exe: ЦИФРОВОЙ ИМПУЛЬС!':'📱 iPhone Duo: ЭЛЕКТРОИМПУЛЬС!');
+ }
+}
+function toast(t){$('toast').textContent=t;$('toast').style.display='block';clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('toast').style.display='none',1100);}
+function update(dt){if(screen!=='play')return;elapsed+=dt;
+ const mag=Math.hypot(move.x,move.y)||1;moveEntity(player,move.x/mag*player.speed*dt*Math.min(1,Math.hypot(move.x,move.y)),move.y/mag*player.speed*dt*Math.min(1,Math.hypot(move.x,move.y)));
+ if(selected==='witch'){if(fireTimer>0){fireTimer=Math.max(0,fireTimer-dt);updateAmmoUI();}}else if(reloadTimer>0){reloadTimer=Math.max(0,reloadTimer-dt);if(reloadTimer===0){ammo=selected==='exe'?5:3;toast(selected==='exe'?'🖥️ .exe снова готов!':'🔫 Магазин заряжен!');}updateAmmoUI();}if(shooting)fireCooldown(dt);
+ for(const b of bots){if(b.hp<=0)continue;b.cd-=dt;b.phase+=dt*2;if(b.type!=='witch'&&b.reloadTimer>0){b.reloadTimer=Math.max(0,b.reloadTimer-dt);if(b.reloadTimer===0)b.ammo=3;}let target=player;if(gameMode==='ffa'||gameMode==='teams'){let candidates=[];if(gameMode==='ffa'||b.team!==player.team)candidates.push(player);for(let j=0;j<bots.length;j++){const other=bots[j];if(other===b||other.hp<=0)continue;if(gameMode==='teams'&&other.team===b.team)continue;candidates.push(other);}target=candidates.sort((a,c)=>Math.hypot(a.x-b.x,a.y-b.y)-Math.hypot(c.x-b.x,c.y-b.y))[0]||player;}else{target=player;}let dx=target.x-b.x,dy=target.y-b.y,d=Math.hypot(dx,dy)||1;let ux=dx/d,uy=dy/d;
+  // Bot movement: exactly match the selected player's speed.
+  // Injured bots prioritize healing diamonds, then retreat at critical health.
+  const healingGem=b.hp<b.maxHp?diamonds[0]:null;
+  if(healingGem){
+    const gx=healingGem.x-b.x,gy=healingGem.y-b.y,gd=Math.hypot(gx,gy)||1;
+    // Keep the gem-seeking speed consistent with this bot's usual movement style;
+    // previously every bot used full speed here and appeared to accelerate suddenly.
+    const gemSpeedFactor = b.style==='sniper' ? .75 : b.style==='witch' ? .8 : b.style==='spread' ? .75 : 1;
+    const gemSpeed = Math.min(b.speed, player ? player.speed : b.speed) * gemSpeedFactor;
+    moveEntity(b,gx/gd*gemSpeed*dt,gy/gd*gemSpeed*dt);
+  }else if(b.hp<=b.maxHp*.3){
+    // Run away from the current enemy while adding a small sideways zig-zag.
+    const side=Math.sin(b.phase)*.22;
+    moveEntity(b,(-ux-uy*side)*b.speed*dt,(-uy+ux*side)*b.speed*dt);
+  }else if(b.style==='rush'){if(d>82)moveEntity(b,ux*b.speed*dt,uy*b.speed*dt);else{moveEntity(b,-uy*Math.sin(b.phase)*b.speed*.45*dt,ux*Math.sin(b.phase)*b.speed*.45*dt);}}
+  else if(b.style==='sniper'){if(d<185)moveEntity(b,-ux*b.speed*dt,-uy*b.speed*dt);else if(d>b.range*.88)moveEntity(b,ux*b.speed*.75*dt,uy*b.speed*.75*dt);else moveEntity(b,-uy*Math.sin(b.phase)*b.speed*.28*dt,ux*Math.sin(b.phase)*b.speed*.28*dt);}
+  else if(b.style==='tank'){if(d>92)moveEntity(b,ux*b.speed*dt,uy*b.speed*dt);}
+  else if(b.style==='witch'){if(d>175)moveEntity(b,ux*b.speed*dt,uy*b.speed*dt);else if(d<115)moveEntity(b,-ux*b.speed*.8*dt,-uy*b.speed*.8*dt);else moveEntity(b,-uy*Math.sin(b.phase)*b.speed*.28*dt,ux*Math.sin(b.phase)*b.speed*.28*dt);}
+  else {if(d>195)moveEntity(b,ux*b.speed*dt,uy*b.speed*dt);else if(d<130)moveEntity(b,-ux*b.speed*.75*dt,-uy*b.speed*.75*dt);else moveEntity(b,-uy*Math.sin(b.phase)*b.speed*.35*dt,ux*Math.sin(b.phase)*b.speed*.35*dt);}
+  if(d<b.range&&b.cd<=0&&(b.type==='witch'||b.type==='exe'||b.ammo>0)){b.cd=b.rate*(.97+Math.random()*.06);if(b.type!=='witch'&&b.type!=='exe')b.ammo--;sfxEnemyShot();const spread=b.style==='spread'?[-.19,0,.19]:b.type==='exe'?[-.13,0,.13]:[0];for(const off of spread){const a=Math.atan2(dy,dx)+off;bullets.push({x:b.x+Math.cos(a)*18,y:b.y+Math.sin(a)*18,vx:Math.cos(a)*b.shot,vy:Math.sin(a)*b.shot,r:b.type==='witch'?9:(b.type==='exe'?7:(b.style==='tank'?6:5)),team:'e',ownerId:b.id,ownerTeam:b.team,targetIsPlayer:target===player,targetTeam:target.team,life:b.range/b.shot+.45,damage:b.damage,potion:b.type==='witch',binary:b.type==='exe',binaryChar:Math.random()<.5?'0':'1',glitch:b.type==='glitch',glitchChar:['0','1','█','░'][Math.floor(Math.random()*4)]});}if(b.type!=='witch'&&b.type!=='exe'&&b.ammo===0)b.reloadTimer=3;}
+ }
+ for(const h of helpers){h.life-=dt;h.cd-=dt;h.phase+=dt*4;let target=null,nearest=Infinity;for(const candidate of bots){if(candidate.hp<=0)continue;const d0=Math.hypot(candidate.x-h.x,candidate.y-h.y);if(d0<nearest){nearest=d0;target=candidate;}}if(target){const dx=target.x-h.x,dy=target.y-h.y,d=Math.hypot(dx,dy)||1;if(d>95)moveEntity(h,dx/d*165*dt,dy/d*165*dt);if(d<285&&h.cd<=0){h.cd=.72;const a=Math.atan2(dy,dx);bullets.push({x:h.x+Math.cos(a)*15,y:h.y+Math.sin(a)*15,vx:Math.cos(a)*350,vy:Math.sin(a)*350,r:5,team:'p',life:.8,damage:13,helperShot:true});}}}
+ helpers=helpers.filter(h=>h.life>0);
+ for(const q of bullets){q.x+=q.vx*dt;q.y+=q.vy*dt;q.life-=dt;if(!q.superPotion&&walls.some(a=>q.x>a.x&&q.x<a.x+a.w&&q.y>a.y&&q.y<a.y+a.h))q.life=0;
+  if(q.superPotion){if(Math.hypot(q.x-q.targetX,q.y-q.targetY)<Math.max(12,440*dt)||q.life<=0){q.x=q.targetX;q.y=q.targetY;poisonZones.push({x:q.targetX,y:q.targetY,r:76,life:10,tick:0,owner:'player'});particles.push({x:q.targetX,y:q.targetY,r:18,max:78,life:.8,ring:true,poisonRing:true});toast('☠️ Ядовитая лужа! Не наступай!');q.life=0;}continue;}
+  if(q.team==='p'){
+   for(const b of bots){if(b.hp>0&&!(gameMode==='teams'&&b.team===player.team)&&Math.hypot(q.x-b.x,q.y-b.y)<b.r+q.r){b.hp-=q.damage;q.life=0;b.hit=.1;if(b.hp<=0){awardTrophy();score++;superCharge=Math.min(100,superCharge+25);for(let i=0;i<7;i++)particles.push({x:b.x,y:b.y,vx:(Math.random()-.5)*100,vy:(Math.random()-.5)*100,life:.35,r:3});}break;}}
+   if(onlineMode&&remotePlayer&&remotePlayer.hp>0&&q.life>0&&Math.hypot(q.x-remotePlayer.x,q.y-remotePlayer.y)<remotePlayer.r+q.r){q.life=0;if(remotePlayer)remotePlayer.hit=.15;}
+  }else{
+   let hitBot=false;
+   if(gameMode==='ffa'||gameMode==='teams')for(const b of bots){if(b.hp>0&&b.id!==q.ownerId&&!(gameMode==='teams'&&b.team===q.ownerTeam)&&Math.hypot(q.x-b.x,q.y-b.y)<b.r+q.r){b.hp-=q.damage;q.life=0;b.hit=.1;hitBot=true;if(b.hp<=0){for(let i=0;i<7;i++)particles.push({x:b.x,y:b.y,vx:(Math.random()-.5)*100,vy:(Math.random()-.5)*100,life:.35,r:3});}break;}}
+   if(!hitBot&&!(gameMode==='teams'&&q.ownerTeam===player.team)&&Math.hypot(q.x-player.x,q.y-player.y)<player.r+q.r){player.hp-=q.damage;q.life=0;player.hit=.15;sfxHit();if(player.hp<=0){player.hp=0;end(false);}}
+  }
+ }
+ // Healing diamonds: spawn reliably every 7 seconds in a visible, mostly clear spot.
+ diamondTimer-=dt;
+ if(diamondTimer<=0){
+   diamondTimer=7;let best=null,bestScore=-Infinity;
+   for(let attempt=0;attempt<100;attempt++){
+     const x=28+Math.random()*Math.max(1,W-56),y=82+Math.random()*Math.max(1,H-122);
+     const blocked=walls.some(a=>x>a.x-20&&x<a.x+a.w+20&&y>a.y-20&&y<a.y+a.h+20);
+     if(blocked)continue;
+     let nearest=player?Math.hypot(x-player.x,y-player.y):999;
+     for(const b of bots){if(b.hp>0)nearest=Math.min(nearest,Math.hypot(x-b.x,y-b.y));}
+     const scoreHere=nearest+Math.random()*45;
+     if(scoreHere>bestScore){bestScore=scoreHere;best={x,y};}
+     if(nearest>75)break;
+   }
+   // Fallback ensures a diamond still appears even on unusually crowded layouts.
+   if(!best){const x=Math.max(28,Math.min(W-28,W*.5+(Math.random()-.5)*Math.min(100,W*.3)));const y=Math.max(82,Math.min(H-40,H*.45+(Math.random()-.5)*Math.min(100,H*.3)));best={x,y};}
+   diamonds.push({...best,r:15,shine:Math.random()*Math.PI*2});
+   toast('💎 Алмаз здоровья появился на арене!');
+ }
+ for(const gem of diamonds){
+   if(player.hp<player.maxHp&&Math.hypot(player.x-gem.x,player.y-gem.y)<player.r+gem.r+5){
+     const healed=Math.min(35,player.maxHp-player.hp);player.hp+=healed;
+     particles.push({x:gem.x,y:gem.y,r:8,max:36,life:.35,ring:true});toast('💎 +'+Math.ceil(healed)+' здоровья!');gem.taken=true;break;
+   }
+   for(const b of bots){if(!gem.taken&&b.hp>0&&b.hp<b.maxHp&&Math.hypot(b.x-gem.x,b.y-gem.y)<b.r+gem.r+5){
+     b.hp=Math.min(b.maxHp,b.hp+35);particles.push({x:gem.x,y:gem.y,r:8,max:30,life:.3,ring:true});gem.taken=true;break;
+   }}
+ }
+ diamonds=diamonds.filter(g=>!g.taken);
+ // Poison zones damage everyone except the Witch who threw the red super-potion.
+ for(const z of poisonZones){z.life-=dt;z.tick+=dt;const damage=18*dt;if(z.owner!=='player'&&Math.hypot(player.x-z.x,player.y-z.y)<player.r+z.r){player.hp-=damage;player.hit=.05;if(player.hp<=0){player.hp=0;end(false);}}for(const b of bots){if(b.hp>0&&!(gameMode==='teams'&&b.team===player.team)&&Math.hypot(b.x-z.x,b.y-z.y)<b.r+z.r){b.hp-=damage;b.hit=.05;if(b.hp<=0){awardTrophy();score++;superCharge=Math.min(100,superCharge+25);for(let i=0;i<5;i++)particles.push({x:b.x,y:b.y,vx:(Math.random()-.5)*80,vy:(Math.random()-.5)*80,life:.3,r:3});}}}}
+ poisonZones=poisonZones.filter(z=>z.life>0);
+ bullets=bullets.filter(q=>q.life>0&&q.x>-10&&q.x<W+10&&q.y>-10&&q.y<H+10);bots=bots.filter(b=>b.hp>0);particles=particles.filter(p=>p.life>0);for(const p of particles){p.life-=dt;if(p.ring)p.r=Math.min(p.max,p.r+Math.max(W,H)*dt*1.4);else{p.x+=p.vx*dt;p.y+=p.vy*dt;}}
+ $('score').textContent=score;$('time').textContent=Math.floor(elapsed/60)+':'+String(Math.floor(elapsed%60)).padStart(2,'0');$('hptext').textContent=Math.ceil(player.hp)+' / '+player.maxHp;$('hpbar').style.width=Math.max(0,player.hp/player.maxHp*100)+'%';$('super').classList.toggle('muted',superCharge<100);if(gameMode==='teams'){const enemies=bots.filter(b=>b.hp>0&&b.team!==player.team);$('missionInfo').textContent='Твоя команда: '+(1+bots.filter(b=>b.hp>0&&b.team===player.team).length)+' · врагов: '+enemies.length;if(enemies.length===0&&screen==='play')end(true);}else{$('missionInfo').textContent='Осталось бойцов: '+(bots.length+ (player.hp>0?1:0))+' / 10';if(bots.length===0&&screen==='play')end(true);}
+}
+function fireCooldown(dt){if(selected==='witch'){if(fireTimer>0)return;fire();fireTimer=1;updateAmmoUI();return;}if(reloadTimer>0)return;fireTimer-=dt;if(fireTimer<=0){fireTimer=selected==='exe'?.16:.28;fire();}}
+function rounded(x,y,w,h,r,color){ctx.fillStyle=color;ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill();}
+function drawStyledCharacter(x,y,r,type,skin,phase=0,hit=false){
+ const bob=Math.sin(elapsed*6+phase)*2.2, sway=Math.sin(elapsed*4+phase)*.07;
+ const base=skin?(skin.body):({fire:'#f07832',witch:'#a53ed0',ghost:'#d9f7ff',exe:'#163d38',glitch:'#28113d'})[type];
+ const trim=skin?skin.trim:({fire:'#ffcf62',witch:'#5b2a80',ghost:'#75eaff',exe:'#39ffae',glitch:'#ff3bf5'})[type];
+ const glow=skin?skin.flame:({fire:'#ffe16b',witch:'#ff68ed',ghost:'#a5f6ff',exe:'#39ffae',glitch:'#ff3bf5'})[type];
+ ctx.save();ctx.translate(x,y+bob);ctx.rotate(sway);ctx.shadowColor=glow;ctx.shadowBlur=2;
+ // tiny feet and rounded body silhouette
+ ctx.fillStyle=trim;ctx.beginPath();ctx.ellipse(-r*.38,r*.62,r*.34,r*.22,-.15,0,Math.PI*2);ctx.ellipse(r*.38,r*.62,r*.34,r*.22,.15,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle=hit?'#fff':base;ctx.strokeStyle=trim;ctx.lineWidth=2.5;
+ ctx.beginPath();if(type==='exe'){ctx.roundRect(-r*.78,-r*.78,r*1.56,r*1.56,r*.12);}else if(type==='glitch'){ctx.moveTo(-r*.78,-r*.55);ctx.lineTo(-r*.35,-r*.9);ctx.lineTo(r*.05,-r*.55);ctx.lineTo(r*.65,-r*.82);ctx.lineTo(r*.8,-r*.2);ctx.lineTo(r*.55,r*.3);ctx.lineTo(r*.75,r*.7);ctx.lineTo(0,r*.55);ctx.lineTo(-r*.6,r*.78);ctx.lineTo(-r*.72,r*.1);ctx.closePath();}else if(type==='ghost'){ctx.moveTo(-r*.8,-r*.45);ctx.quadraticCurveTo(-r*1.05,-r*1.25,0,-r*1.12);ctx.quadraticCurveTo(r*1.05,-r*1.25,r*.8,-r*.45);ctx.lineTo(r*.72,r*.55);ctx.lineTo(r*.35,r*.38);ctx.lineTo(0,r*.62);ctx.lineTo(-r*.35,r*.38);ctx.lineTo(-r*.72,r*.55);ctx.closePath();}else{ctx.moveTo(-r*.75,r*.55);ctx.quadraticCurveTo(-r*1.05,0,-r*.7,-r*.58);ctx.quadraticCurveTo(-r*.55,-r*1.08,0,-r*.92);ctx.quadraticCurveTo(r*.7,-r*1.08,r*.75,-r*.45);ctx.quadraticCurveTo(r*1.05,0,r*.72,r*.55);ctx.quadraticCurveTo(0,r*.88,-r*.75,r*.55);ctx.closePath();}ctx.fill();ctx.stroke();ctx.shadowBlur=0;
+ // eyes and cheeks
+ ctx.fillStyle=type==='ghost'?'#172b4b':'#fff8e9';ctx.beginPath();ctx.ellipse(-r*.28,-r*.12,r*.13,r*.19,-.08,0,Math.PI*2);ctx.ellipse(r*.28,-r*.12,r*.13,r*.19,.08,0,Math.PI*2);ctx.fill();ctx.fillStyle='#202039';ctx.beginPath();ctx.arc(-r*.27,-r*.1,r*.075,0,Math.PI*2);ctx.arc(r*.27,-r*.1,r*.075,0,Math.PI*2);ctx.fill();
+ if(type==='glitch'){ctx.fillStyle=glow;ctx.font='900 '+(r*.48)+'px monospace';ctx.textAlign='center';ctx.fillText('404',0,r*.35);ctx.strokeStyle=glow;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-r*.7,-r*.2);ctx.lineTo(-r*.35,-r*.05);ctx.lineTo(-r*.55,r*.12);ctx.moveTo(r*.42,-r*.25);ctx.lineTo(r*.68,-r*.08);ctx.stroke();}
+ if(type==='exe'){ctx.fillStyle=glow;ctx.font='900 '+(r*.55)+'px monospace';ctx.textAlign='center';ctx.fillText('01',0,r*.34);ctx.strokeStyle=glow;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,-r*.8);ctx.lineTo(0,-r*1.18);ctx.stroke();ctx.beginPath();ctx.arc(0,-r*1.22,r*.09,0,Math.PI*2);ctx.fill();}
+ else if(type==='fire'){ctx.fillStyle=glow;ctx.beginPath();ctx.moveTo(-r*.48,-r*.55);ctx.quadraticCurveTo(-r*.85,-r*1.3,-r*.12,-r*1.04);ctx.quadraticCurveTo(r*.02,-r*1.48,r*.24,-r*.92);ctx.quadraticCurveTo(r*.72,-r*1.1,r*.52,-r*.48);ctx.closePath();ctx.fill();ctx.fillStyle=trim;ctx.beginPath();ctx.moveTo(-r*.2,r*.38);ctx.lineTo(0,r*.12);ctx.lineTo(r*.2,r*.38);ctx.fill();}
+ else if(type==='witch'){ctx.fillStyle=trim;ctx.beginPath();ctx.moveTo(-r*.9,-r*.48);ctx.lineTo(0,-r*1.48);ctx.lineTo(r*.9,-r*.48);ctx.closePath();ctx.fill();ctx.stroke();ctx.fillStyle=base;ctx.beginPath();ctx.ellipse(0,-r*.48,r*.98,r*.19,0,0,Math.PI*2);ctx.fill();ctx.fillStyle=glow;ctx.beginPath();ctx.arc(r*.72,r*.35,r*.18*(1+Math.sin(elapsed*8)*.15),0,Math.PI*2);ctx.fill();}
+ else{ctx.fillStyle=glow;ctx.beginPath();ctx.arc(0,-r*.88,r*.18*(1+Math.sin(elapsed*7+phase)*.18),0,Math.PI*2);ctx.fill();ctx.strokeStyle=trim;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-r*.5,r*.3);ctx.lineTo(-r*.75,r*.55);ctx.moveTo(r*.5,r*.3);ctx.lineTo(r*.75,r*.55);ctx.stroke();}
+ // Golden skins share one polished crown with a central ruby; no particles (keeps performance stable).
+ if(skin&&skin.gold){
+   ctx.save();
+   ctx.lineJoin='round';
+   // Crown band with a rich gold gradient.
+   const crownY=-r*1.04;
+   const gold=ctx.createLinearGradient(0,-r*1.48,0,-r*.91);
+   gold.addColorStop(0,'#fff8c7');gold.addColorStop(.35,'#ffdf55');gold.addColorStop(.72,'#e8a91e');gold.addColorStop(1,'#a96808');
+   ctx.fillStyle=gold;ctx.strokeStyle='#8a5109';ctx.lineWidth=Math.max(1,r*.055);
+   ctx.beginPath();ctx.moveTo(-r*.53,crownY);ctx.lineTo(-r*.48,-r*1.39);ctx.lineTo(-r*.19,-r*1.19);ctx.lineTo(0,-r*1.48);ctx.lineTo(r*.2,-r*1.19);ctx.lineTo(r*.48,-r*1.39);ctx.lineTo(r*.53,crownY);ctx.lineTo(r*.43,-r*.91);ctx.lineTo(-r*.43,-r*.91);ctx.closePath();ctx.fill();ctx.stroke();
+   // Fine highlight across the lower rim.
+   ctx.strokeStyle='#fff4a8';ctx.lineWidth=Math.max(1,r*.045);ctx.beginPath();ctx.moveTo(-r*.43,-r*.97);ctx.lineTo(r*.43,-r*.97);ctx.stroke();
+   // Large faceted red diamond mounted in the middle of the crown.
+   const gy=-r*1.19, gw=r*.145, gh=r*.17;
+   ctx.fillStyle='#7c071b';ctx.beginPath();ctx.moveTo(0,gy-gh);ctx.lineTo(gw,gy-gh*.25);ctx.lineTo(gw*.72,gy+gh*.72);ctx.lineTo(0,gy+gh);ctx.lineTo(-gw*.72,gy+gh*.72);ctx.lineTo(-gw,gy-gh*.25);ctx.closePath();ctx.fill();
+   ctx.fillStyle='#f21e43';ctx.beginPath();ctx.moveTo(0,gy-gh);ctx.lineTo(gw,gy-gh*.25);ctx.lineTo(0,gy+gh*.12);ctx.lineTo(-gw,gy-gh*.25);ctx.closePath();ctx.fill();
+   ctx.fillStyle='#ff8b9d';ctx.beginPath();ctx.moveTo(0,gy-gh);ctx.lineTo(-gw,gy-gh*.25);ctx.lineTo(0,gy+gh*.12);ctx.closePath();ctx.fill();
+   ctx.fillStyle='#b90d2d';ctx.beginPath();ctx.moveTo(0,gy+gh*.12);ctx.lineTo(gw,gy-gh*.25);ctx.lineTo(gw*.72,gy+gh*.72);ctx.lineTo(0,gy+gh);ctx.closePath();ctx.fill();
+   ctx.restore();
+ }
+ ctx.restore();
+}
+function draw(){
+ ctx.clearRect(0,0,W,H);let m=maps[map];ctx.fillStyle=m.bg;ctx.fillRect(0,0,W,H);ctx.fillStyle=m.ground;ctx.fillRect(0,55,W,H-55);
+ // floor pattern
+ ctx.globalAlpha=.16;ctx.strokeStyle=m.accent;ctx.lineWidth=1;let grid=36;for(let x=0;x<W;x+=grid){ctx.beginPath();ctx.moveTo(x,55);ctx.lineTo(x,H);ctx.stroke()}for(let y=55;y<H;y+=grid){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}ctx.globalAlpha=1;
+ if(map==='desert'){for(let i=0;i<8;i++){ctx.fillStyle='#b98b4c';ctx.beginPath();ctx.ellipse((i*137+42)%W,(i*83+95)%(H-70)+60,9,4,.4,0,Math.PI*2);ctx.fill()}}
+ if(map==='ice'){for(let i=0;i<6;i++){ctx.fillStyle='#ffffff88';ctx.beginPath();ctx.moveTo((i*119+30)%W,90+i*35);ctx.lineTo((i*119+42)%W,112+i*35);ctx.lineTo((i*119+22)%W,108+i*35);ctx.fill()}}
+ if(map==='neon'){ctx.strokeStyle='#ec65ef55';ctx.lineWidth=3;for(let x=20;x<W;x+=70){ctx.strokeRect(x,70,28,Math.max(40,H*.13));}}
+ for(const a of walls){rounded(a.x+3,a.y+5,a.w,a.h,7,'#0003');rounded(a.x,a.y,a.w,a.h,7,m.wall);rounded(a.x+4,a.y+4,a.w-8,7,3,m.accent)}
+ for(const bush of bushes){ctx.save();ctx.fillStyle='#286a3a';ctx.strokeStyle='#b5f47b';ctx.lineWidth=2;ctx.globalAlpha=.92;for(const [ox,oy,rr] of [[-bush.r*.48,0,bush.r*.58],[0,-bush.r*.2,bush.r*.66],[bush.r*.48,0,bush.r*.58],[0,bush.r*.32,bush.r*.55]]){ctx.beginPath();ctx.arc(bush.x+ox,bush.y+oy,rr,0,Math.PI*2);ctx.fill();ctx.stroke();}ctx.globalAlpha=.8;ctx.strokeStyle='#70b85b';ctx.beginPath();ctx.moveTo(bush.x-bush.r*.5,bush.y+bush.r*.18);ctx.lineTo(bush.x+bush.r*.4,bush.y-bush.r*.2);ctx.stroke();ctx.restore();}
+ for(const g of diamonds){ctx.save();ctx.globalAlpha=.28;ctx.fillStyle='#39efff';ctx.beginPath();ctx.arc(g.x,g.y,23+Math.sin(elapsed*5+(g.shine||0))*3,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;ctx.translate(g.x,g.y);ctx.rotate(Math.sin(elapsed*3+(g.shine||0))*.16);ctx.shadowColor='#5efaff';ctx.shadowBlur=10;ctx.fillStyle='#72f7ff';ctx.strokeStyle='#ffffff';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,-17);ctx.lineTo(13,-4);ctx.lineTo(8,13);ctx.lineTo(-8,13);ctx.lineTo(-13,-4);ctx.closePath();ctx.fill();ctx.stroke();ctx.shadowBlur=0;ctx.fillStyle='#ffffff';ctx.beginPath();ctx.moveTo(-6,-4);ctx.lineTo(0,-12);ctx.lineTo(0,5);ctx.closePath();ctx.fill();ctx.restore();}
+ for(const z of poisonZones){ctx.globalAlpha=.24;ctx.fillStyle='#ff183c';ctx.beginPath();ctx.arc(z.x,z.y,z.r,0,Math.PI*2);ctx.fill();ctx.globalAlpha=.8;ctx.strokeStyle='#ff4057';ctx.lineWidth=4;ctx.beginPath();ctx.arc(z.x,z.y,z.r*(.92+Math.sin(elapsed*5)*.04),0,Math.PI*2);ctx.stroke();ctx.globalAlpha=.45;for(let i=0;i<5;i++){ctx.fillStyle='#ff6675';ctx.beginPath();ctx.arc(z.x+Math.sin(elapsed*2+i*1.7)*z.r*.55,z.y+Math.cos(elapsed*2.4+i*1.7)*z.r*.55,5+(i%3),0,Math.PI*2);ctx.fill();}ctx.globalAlpha=1;}
+ for(const q of bullets){if(q.glitch){ctx.save();ctx.font='900 '+Math.max(12,q.r*2.8)+'px monospace';ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor='#ff3bf5';ctx.shadowBlur=9;ctx.fillStyle=['#ff3bf5','#83f7ff','#ffffff'][Math.floor((q.x+q.y)%3)];ctx.fillText(q.glitchChar||'█',q.x,q.y);ctx.restore();continue;}if(q.binary){ctx.save();ctx.font='900 '+Math.max(12,q.r*2.8)+'px monospace';ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor='#39ffae';ctx.shadowBlur=8;ctx.fillStyle='#39ffae';ctx.fillText(q.binaryChar||'0',q.x,q.y);ctx.restore();continue;}ctx.fillStyle=q.superPotion?'#ff183c':q.potion?'#65f542':q.team==='p'?'#fff36c':'#ff5d7d';ctx.beginPath();ctx.arc(q.x,q.y,q.r,0,Math.PI*2);ctx.fill();ctx.strokeStyle=q.superPotion?'#7d0019':q.potion?'#247d35':q.team==='p'?'#ffb62f':'#a82249';ctx.lineWidth=2;ctx.stroke();if(q.superPotion){ctx.fillStyle='#ffb5c0';ctx.beginPath();ctx.arc(q.x-3,q.y-3,4,0,Math.PI*2);ctx.fill()}else if(q.potion){ctx.fillStyle='#caffad';ctx.beginPath();ctx.arc(q.x-2,q.y-2,2.5,0,Math.PI*2);ctx.fill()}}
+ for(const p of particles){ctx.globalAlpha=Math.max(0,p.life*2);if(p.lightning){ctx.strokeStyle='#fff36c';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(p.x1,p.y1);for(let i=1;i<6;i++){const t=i/6;ctx.lineTo(p.x1+(p.x2-p.x1)*t+Math.sin(i*12.9898+elapsed*8)*8,p.y1+(p.y2-p.y1)*t+Math.sin(i*12.9898+elapsed*8)*8)}ctx.lineTo(p.x2,p.y2);ctx.stroke()}else if(p.flame){ctx.fillStyle=p.life>.2?'#ff7b32':'#ffe45e';ctx.beginPath();ctx.arc(p.x,p.y,p.r*(.8+.2*Math.sin(elapsed*18+p.x)),0,Math.PI*2);ctx.fill()}else if(p.ring){ctx.strokeStyle=p.poisonRing?'#ff4057':p.tankRing?'#ffb94d':p.glitchRing?'#ff3bf5':'#bafaff';ctx.lineWidth=(p.tankRing||p.poisonRing)?10:6;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.stroke()}else{ctx.fillStyle='#ffe56b';ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill()}ctx.globalAlpha=1}
+ for(const h of helpers){ctx.save();ctx.globalAlpha=.65+.2*Math.sin(elapsed*9+h.phase);ctx.shadowColor='#9ef6ff';ctx.shadowBlur=9;ctx.fillStyle='#b8f4ff';ctx.beginPath();ctx.arc(h.x,h.y+Math.sin(h.phase)*3,h.r,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();ctx.shadowBlur=0;ctx.fillStyle='#34436c';ctx.beginPath();ctx.arc(h.x-4,h.y-2,2.5,0,Math.PI*2);ctx.arc(h.x+4,h.y-2,2.5,0,Math.PI*2);ctx.fill();ctx.restore();}
+ for(const b of bots){ctx.fillStyle='#0004';ctx.beginPath();ctx.ellipse(b.x,b.y+14,b.r+2,8,0,0,Math.PI*2);ctx.fill();drawStyledCharacter(b.x,b.y,b.r,b.type==='tank'?'fire':b.type,b.skin||null,b.id||0,b.hit>0);const bw=b.type==='tank'?42:36;rounded(b.x-bw/2,b.y-b.r-17,bw,6,3,'#321d38');rounded(b.x-bw/2,b.y-b.r-17,bw*Math.max(0,b.hp/b.maxHp),6,3,b.hp/b.maxHp<.3?'#ff515d':'#70ed70');ctx.fillStyle='#fff';ctx.font='bold 9px system-ui';ctx.textAlign='center';ctx.fillText(b.name,b.x,b.y-b.r-21);}
+ if(player){const activeSkin=equippedSkin(selected);ctx.fillStyle='#0004';ctx.beginPath();ctx.ellipse(player.x,player.y+14,19,8,0,0,Math.PI*2);ctx.fill();drawStyledCharacter(player.x,player.y,player.r,selected,activeSkin,0,player.hit>0);
+   // Player locator: pulsing cyan ring and a floating YOU marker, clearly distinct from bots.
+   const markerPulse=1+Math.sin(elapsed*7)*.12;ctx.save();ctx.strokeStyle='#4ffcff';ctx.lineWidth=3;ctx.shadowColor='#32efff';ctx.shadowBlur=5;ctx.globalAlpha=.8+.2*Math.sin(elapsed*8);ctx.beginPath();ctx.ellipse(player.x,player.y+2,player.r*1.42*markerPulse,player.r*1.16*markerPulse,0,0,Math.PI*2);ctx.stroke();ctx.shadowBlur=0;ctx.globalAlpha=1;ctx.fillStyle='#072c45';ctx.strokeStyle='#a7ffff';ctx.lineWidth=1.5;ctx.beginPath();ctx.roundRect(player.x-19,player.y-player.r-37,38,15,6);ctx.fill();ctx.stroke();ctx.fillStyle='#dfffff';ctx.font='bold 9px system-ui';ctx.textAlign='center';ctx.fillText('ТЫ',player.x,player.y-player.r-26);ctx.restore();
+   rounded(player.x-20,player.y-31,40,6,3,'#54263a');rounded(player.x-20,player.y-31,40*Math.max(0,player.hp/player.maxHp),6,3,'#70ed70');}
+ if(onlineMode&&remotePlayer){const remoteSkin=SKIN_LIST.find(s=>s.id===remotePlayer.skin)||null;ctx.fillStyle='#0004';ctx.beginPath();ctx.ellipse(remotePlayer.x,remotePlayer.y+14,19,8,0,0,Math.PI*2);ctx.fill();drawStyledCharacter(remotePlayer.x,remotePlayer.y,remotePlayer.r,remotePlayer.fighter,remoteSkin,2,remotePlayer.hit>0);ctx.save();ctx.strokeStyle='#ff76b8';ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(remotePlayer.x,remotePlayer.y+2,remotePlayer.r*1.42,remotePlayer.r*1.16,0,0,Math.PI*2);ctx.stroke();ctx.fillStyle='#30152c';ctx.strokeStyle='#ffb0d3';ctx.lineWidth=1.5;ctx.beginPath();ctx.roundRect(remotePlayer.x-25,remotePlayer.y-remotePlayer.r-37,50,15,6);ctx.fill();ctx.stroke();ctx.fillStyle='#fff';ctx.font='bold 9px system-ui';ctx.textAlign='center';ctx.fillText('ДРУГ',remotePlayer.x,remotePlayer.y-remotePlayer.r-26);ctx.restore();rounded(remotePlayer.x-20,remotePlayer.y-31,40,6,3,'#54263a');rounded(remotePlayer.x-20,remotePlayer.y-31,40*Math.max(0,remotePlayer.hp/remotePlayer.maxHp),6,3,'#70ed70');}
+ if(screen==='menu'){ctx.fillStyle='#ffffff12';for(let i=0;i<12;i++){ctx.beginPath();ctx.arc((i*93+30)%W,(i*71+40)%H,8+(i%3)*5,0,Math.PI*2);ctx.fill()}}
+}
+// Uncapped rendering: draw on every animation frame available from the device.
+// Keep the simulation delta bounded for stability; pause work while the page is hidden.
+let raf,lastFrame=0;
+function loop(now){
+ if(document.hidden){last=now;raf=requestAnimationFrame(loop);return;}
+ const frameDelta=lastFrame?Math.min(.05,(now-lastFrame)/1000):1/60;
+ lastFrame=now;last=now;
+ update(frameDelta);sendOnlineState(now);draw();raf=requestAnimationFrame(loop);
+}
+document.addEventListener('visibilitychange',()=>{last=performance.now();lastFrame=0;});
+function pause(){if(screen==='play'){screen='pause';$('controls').classList.add('hidden');$('hud').classList.add('hidden');show('pause')}}
+function resume(){screen='play';show('menu');$('menu').classList.add('hidden');$('controls').classList.remove('hidden');$('hud').classList.remove('hidden');last=performance.now()}
+// Infinity Drop: rarity can rise at each of four independent upgrade attempts.
+const dropRarities=[
+ {name:'Common',color:'#d7d9e5',emoji:'⚪',reward:'50 рубинов'},
+ {name:'Rare',color:'#55a7ff',emoji:'🔵',reward:'100 рубинов'},
+ {name:'Epic',color:'#bd72ff',emoji:'🟣',reward:'20% шанс на Глитча, иначе 500 рубинов'},
+ {name:'Mythic',color:'#ff6b9b',emoji:'🔴',reward:'40% шанс на Глитча, иначе 1000 рубинов'},
+ {name:'Legendary',color:'#ffd34e',emoji:'🌟',reward:'40% шанс на Глитча; также шанс .exe / Призрак'}
+];
+let dropActive=false,dropRarityIndex=0,dropAttempts=4,dropFinished=false;
+function updateDropButton(){const b=$('infinityDropBtn');if(!b)return;const progress=totalKills%20;b.textContent=dropsAvailable>0?'🌟 INFINITY DROP · ГОТОВО ×'+dropsAvailable:'🌟 INFINITY DROP · '+progress+'/20 УБИЙСТВ';}
+function updateDropUI(){const r=dropRarities[dropRarityIndex];$('dropRarity').textContent=r.name;$('dropRarity').style.color=r.color;$('dropEmoji').textContent=r.emoji;$('dropTitle').textContent='Infinity Drop · '+r.name;$('dropAttempts').textContent='Попытки повышения: '+dropAttempts;$('dropRewardPreview').textContent='Награда: '+r.reward;$('dropOpen').disabled=(!dropActive&&dropsAvailable<=0)||dropFinished;$('dropUpgrade').disabled=!dropActive||dropFinished||dropAttempts<=0;$('dropClaim').disabled=!dropActive||!dropFinished;if(!dropActive){$('dropStatus').textContent=dropsAvailable>0?'У тебя есть Infinity Drop! Нажми «Открыть».':'Infinity Drop выдаётся за каждые 20 убийств. Прогресс: '+(totalKills%20)+'/20.';$('dropRewardPreview').textContent='Следующий Infinity Drop: '+(20-(totalKills%20))+' убийств осталось';$('dropAttempts').textContent='Доступно Infinity Drop: '+dropsAvailable;}}
+function beginDrop(){if(dropsAvailable<=0){dropActive=false;dropFinished=false;updateDropUI();return false;}dropsAvailable--;safeSave(DROPS_KEY,dropsAvailable);dropActive=true;dropFinished=false;dropRarityIndex=0;dropAttempts=4;$('dropStatus').textContent='Начальная редкость — Common. Попробуй повысить её!';updateDropButton();updateDropUI();return true;}
+$('infinityDropBtn').onclick=()=>{dropActive=false;dropFinished=false;updateDropButton();updateDropUI();show('dropScreen')};
+$('dropOpen').onclick=()=>{if(dropActive||dropFinished)return;if(!beginDrop()){toast('🔒 Infinity Drop выдаётся каждые 20 убийств!');return;}$('dropStatus').textContent='Infinity Drop открыт! Можно попытаться повысить редкость.';updateDropUI()};
+$('dropUpgrade').onclick=()=>{if(!dropActive||dropFinished||dropAttempts<=0)return;dropAttempts--;if(dropRarityIndex<4&&Math.random()<.5){dropRarityIndex++;$('dropStatus').textContent='✨ УСПЕХ! Редкость повышена до '+dropRarities[dropRarityIndex].name+'!';}else{$('dropStatus').textContent=dropRarityIndex===4?'🌟 Уже Legendary — выше нельзя!':'Не получилось повысить редкость. Попробуй ещё раз!';}if(dropAttempts===0){dropFinished=true;$('dropStatus').textContent+=' Попытки закончились — забери награду.';}updateDropUI()};
+$('dropClaim').onclick=()=>{if(!dropActive||!dropFinished)return;let message='';const unlockGlitch=()=>{if(!glitchUnlocked){glitchUnlocked=true;saveGlitchUnlocked();message='👾 ГЛИТЧ ОТКРЫТ!';return true;}return false;};if(dropRarityIndex===0){rubies+=50;message='⚪ +50 рубинов!';}else if(dropRarityIndex===1){rubies+=100;message='🔵 +100 рубинов!';}else if(dropRarityIndex===2){if(Math.random()<.20&&unlockGlitch()){}else{rubies+=500;message='🟣 +500 рубинов!';}}else if(dropRarityIndex===3){if(Math.random()<.40&&unlockGlitch()){}else{rubies+=1000;message='🔴 +1000 рубинов!';}}else{if(Math.random()<.40&&unlockGlitch()){}else if(!exeUnlocked&&Math.random()<.10){exeUnlocked=true;saveExeUnlocked();message='🖥️ ЛЕГЕНДАРНАЯ НАГРАДА — БОЕЦ .exe ОТКРЫТ!';}else if(!ghostUnlocked&&Math.random()<.5){ghostUnlocked=true;saveGhostUnlocked();message='👻 ЛЕГЕНДАРНАЯ НАГРАДА — ПРИЗРАК!';}else{rubies+=2000;message='🌟 ЛЕГЕНДАРНАЯ НАГРАДА — +2000 РУБИНОВ!';}}safeSave(RUBY_KEY,rubies);refreshTrophies();refreshFighters();refreshSkins();$('dropStatus').textContent='Награда получена: '+message;$('dropClaim').disabled=true;$('dropUpgrade').disabled=true;$('dropOpen').disabled=false;dropActive=false;dropFinished=false;toast(message);};
+$('dropBack').onclick=()=>{show('menu');startMenuMusic();updateDropButton()};updateDropButton();updateDropUI();
+$('illusionEventBtn').onclick=()=>{sfxClick();refreshIllusionQuest();show('illusionEventScreen');startMenuMusic();};
+$('backIllusion').onclick=()=>{show('menu');startMenuMusic();};
+function refreshIllusionQuest(){const done=safeLoad(ILLUSION_QUEST_KEY,'0')==='1';$('illusionQuestStatus').textContent=done?'✅ Квест пройден! Фаер — Фиолетовый маг получен.':'🎁 Награда: эксклюзивный скин Фаера. Только за квест!';$('illusionPlayDay1').textContent=done?'🔁 СЫГРАТЬ ЕЩЁ РАЗ':'⚔️ ПРОЙТИ КВЕСТ: ДЕНЬ 1';}
+$('illusionPlayDay1').onclick=()=>{sfxClick();if(safeLoad(ILLUSION_QUEST_KEY,'0')!=='1')safeSave(ILLUSION_ACTIVE_KEY,'1');cleanupNetwork();map='meadow';safeSave('infinityFight_map_v1','meadow');gameMode='hunter';safeSave('infinityFight_gameMode_v1',gameMode);start();$('mapName').textContent='🔮 Королевство иллюзий · День 1';$('missionInfo').textContent='КВЕСТ · ПОБЕДИ ВСЕХ ПРОТИВНИКОВ';toast('🔮 День 1: победи и получи скин Фаера!');};
+
+$('fightTab').onclick=()=>{sfxClick();show('fightScreen');startMenuMusic();updateFightModeStatus()};$('dataTab').onclick=()=>{sfxClick();show('dataScreen');startMenuMusic()};$('backFight').onclick=()=>{show('menu');startMenuMusic()};$('backData').onclick=()=>{show('menu');startMenuMusic()};function updateFightModeStatus(){const labels={ffa:'Каждый сам за себя',hunter:'Все против игрока',teams:'Двойная битва'};const label=labels[gameMode]||labels.ffa;$('fightModeStatus').textContent='Выбран режим: '+label;document.querySelectorAll('[data-mode]').forEach(b=>{b.classList.toggle('active',b.dataset.mode===gameMode);});}document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{gameMode=b.dataset.mode;safeSave('infinityFight_gameMode_v1',gameMode);updateFightModeStatus();toast('Режим выбран: '+({ffa:'Каждый сам за себя',hunter:'Все против игрока',teams:'Двойная битва'}[gameMode]||gameMode));});$('play').onclick=()=>{cleanupNetwork();sfxClick();start()};updateFightModeStatus();$('backMode').onclick=()=>{show('fightScreen');startMenuMusic()};$('choose').onclick=()=>{sfxClick();refreshFighters();show('fighters')};$('skinsTab').onclick=()=>{sfxClick();refreshSkins();show('skinsScreen')};$('backSkins').onclick=()=>{show('menu');startMenuMusic()};$('maps').onclick=()=>{sfxClick();show('mapsScreen')};$('backF').onclick=()=>{show('menu');startMenuMusic()};$('backM').onclick=()=>{show('menu');startMenuMusic()};function refreshSkins(){syncGoldenSkins();const grid=$('skinGrid');if(!grid)return;grid.innerHTML='';for(const skin of SKIN_LIST){if(skin.gold||skinOwned(skin.id)||skin.id==='fire_illusion')continue;const locked=(skin.fighter==='ghost'&&!ghostUnlocked)||(skin.fighter==='exe'&&!exeUnlocked)||(skin.fighter==='glitch'&&!glitchUnlocked);const card=document.createElement('button');card.className='skin-option';card.innerHTML='<span class="skin-icon">'+skin.icon+'</span><b>'+skin.name+'</b><small>'+skin.desc+'<br>Боец: '+({fire:'Фаер',witch:'Ведьма',ghost:'Призрак',exe:'.exe',glitch:'Глитч'}[skin.fighter])+'<br>'+(locked?'🔒 Сначала открой бойца':'💎 '+skin.price+' рубинов')+'</small><span>'+(locked?'🔒':'КУПИТЬ')+'</span>';card.onclick=()=>{if(locked){toast('🔒 Сначала открой этого бойца!');return;}if(rubies<skin.price){toast('💎 Нужно '+skin.price+' рубинов. Сейчас: '+rubies);return;}rubies-=skin.price;skinData.owned.push(skin.id);skinData.equipped[skin.fighter]=skin.id;saveSkinData();safeSave(RUBY_KEY,rubies);refreshTrophies();refreshSkins();refreshFighterCard();toast('✨ Куплен скин «'+skin.name+'»! Он теперь в карточке бойца.');};grid.appendChild(card);}if(!grid.children.length)grid.innerHTML='<p>🎉 Все скины куплены! Золотые и купленные облики выбираются в карточке бойца.</p>';}
+const FIGHTER_INFO={fire:{name:'Фаер',icon:'🔥',desc:'Быстрый боец. Супер: огненный рывок.'},witch:{name:'Ведьма',icon:'🧙‍♀️',desc:'Зелёные зелья и ядовитое супер.'},ghost:{name:'Призрак',icon:'👻',desc:'Три удара с перезарядкой. Супер призывает помощника.'},exe:{name:'.exe',icon:'🖥️',desc:'Цифровой боец: быстрые нули и единицы, высокая скорость и цифровой импульс.'},glitch:{name:'Глитч',icon:'👾',desc:'Мифический цифровой боец: стреляет тремя нестабильными пикселями, супер — телепорт и взрыв.'}};
+function openFighterCard(id){if(id==='ghost'&&!ghostUnlocked){toast('🔒 Призрак закрыт! Купи призрачный ящик за 10 Gcoin.');return;}if(id==='exe'&&!exeUnlocked){toast('🔒 .exe закрыт! Получи его из легендарного дропа с шансом 10%.');return;}if(id==='glitch'&&!glitchUnlocked){toast('🔒 Глитч закрыт! Ищи его в Epic, Mythic или Legendary Drop.');return;}selected=id;safeSave('infinityFight_selectedFighter_v1',selected);$('fighterCard').classList.remove('hidden');$('fighterGrid').classList.add('hidden');refreshFighterCard();}
+function refreshFighterCard(){const id=selected,info=FIGHTER_INFO[id];if(!info||!$('fighterCard'))return;syncGoldenSkins();$('fighterCardName').textContent=info.name;$('fighterCardDesc').textContent=info.desc;$('fighterPreview').textContent=equippedSkin(id)?.icon||info.icon;$('cardTrophies').textContent=String(fighterTrophies[id]||0);$('cardStars').textContent='⭐'.repeat(Math.min(20,Math.floor((fighterTrophies[id]||0)/100)))+' ('+Math.floor((fighterTrophies[id]||0)/100)+')';const list=$('cardSkinList');list.innerHTML='';const defaultBtn=document.createElement('button');defaultBtn.className='skin-option'+(!equippedSkin(id)?' equipped':'');defaultBtn.innerHTML='<span class="skin-icon">'+info.icon+'</span><b>Оригинальный облик</b><small>Базовый скин</small><span>'+(!equippedSkin(id)?'НАДЕТ':'НАДЕТЬ')+'</span>';defaultBtn.onclick=()=>{delete skinData.equipped[id];saveSkinData();refreshFighterCard();toast('Вернули оригинальный скин!');};list.appendChild(defaultBtn);for(const skin of SKIN_LIST.filter(x=>x.fighter===id&&skinOwned(x.id))){const equipped=skinData.equipped[id]===skin.id;const card=document.createElement('button');card.className='skin-option owned'+(equipped?' equipped':'');card.innerHTML='<span class="skin-icon">'+skin.icon+'</span><b>'+skin.name+'</b><small>'+(skin.gold?'⭐ Золотой скин за 100 кубков':'Купленный скин')+'</small><span>'+(equipped?'✅ НАДЕТ':'НАДЕТЬ')+'</span>';card.onclick=()=>{skinData.equipped[id]=skin.id;saveSkinData();refreshFighterCard();toast('🎨 Надет скин: '+skin.name);};list.appendChild(card);}}
+function refreshFighters(){refreshFighterTrophies();$('super').innerHTML='⚡<br>СУПЕР';document.querySelectorAll('[data-fighter]').forEach(b=>{const locked=(b.dataset.fighter==='ghost'&&!ghostUnlocked)||(b.dataset.fighter==='exe'&&!exeUnlocked)||(b.dataset.fighter==='glitch'&&!glitchUnlocked);b.classList.toggle('active',b.dataset.fighter===selected);b.style.opacity=locked?'.62':'1';const title=b.querySelector('b');if(title&&b.dataset.fighter==='ghost')title.textContent=ghostUnlocked?'Призрак 👻':'Призрак 🔒';if(title&&b.dataset.fighter==='exe')title.textContent=exeUnlocked?'.exe 🖥️':'.exe 🔒';if(title&&b.dataset.fighter==='glitch')title.textContent=glitchUnlocked?'Глитч 👾':'Глитч 🔒';const small=b.querySelector('small');if(small)small.innerHTML='🏆 Кубки: '+(fighterTrophies[b.dataset.fighter]||0)+'<br>⭐ Звёзды: '+Math.floor((fighterTrophies[b.dataset.fighter]||0)/100)+'<br>Нажми, чтобы открыть карточку';});if(!$('fighterCard').classList.contains('hidden'))refreshFighterCard();$('shoot').innerHTML='🎯<br>АТАКА<br><small id="ammoLabel">'+(selected==='exe'?'5 / 5':'3 / 3')+'</small>';updateAmmoUI();}
+document.querySelectorAll('[data-fighter]').forEach(b=>b.onclick=()=>openFighterCard(b.dataset.fighter));$('selectFighter').onclick=()=>{if(selected==='ghost'&&!ghostUnlocked){toast('🔒 Сначала открой Призрака в ящике!');return;}if(selected==='exe'&&!exeUnlocked){toast('🔒 Сначала открой .exe из легендарного дропа!');return;}if(selected==='glitch'&&!glitchUnlocked){toast('🔒 Сначала получи Глитча из дропа!');return;}toast('Боец выбран!');show('menu');startMenuMusic()};$('closeFighterCard').onclick=()=>{$('fighterCard').classList.add('hidden');$('fighterGrid').classList.remove('hidden')};refreshFighters();
+$('buyGhostBox').onclick=()=>{if(ghostUnlocked){toast('👻 Призрак уже открыт!');return;}if(gcoins<10){toast('🟡 Нужно 10 Gcoin. Сейчас: '+gcoins);return;}gcoins-=10;safeSave(GCOIN_KEY,gcoins);if(Math.random()<0.10){ghostUnlocked=true;saveGhostUnlocked();const saved=safeLoad(GHOST_KEY,'0')==='1';toast(saved?'🎉 ВЫПАЛ ПРИЗРАК! Он сохранён навсегда на этом устройстве!':'⚠️ Призрак открыт, но браузер не подтвердил сохранение.');}else{toast('📦 Призрак не выпал. Попробуй ещё раз!');}refreshTrophies();refreshFighters();};$('exportSave').onclick=()=>{try{const blob=new Blob([JSON.stringify(makePortableSave(),null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='infinity_fight_save.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);toast('💾 Файл сохранения создан! Перенеси его в новую версию.');}catch(e){toast('⚠️ Не удалось создать файл сохранения');}};
+$('importSave').onclick=()=> $('saveFileInput').click();
+$('saveFileInput').onchange=async e=>{const file=e.target.files&&e.target.files[0];if(!file)return;try{const data=JSON.parse(await file.text());applyPortableSave(data);toast('✅ Прогресс загружен: рубины, Gcoin и бойцы восстановлены!');}catch(err){toast('⚠️ Не удалось загрузить сохранение. Выбери правильный JSON-файл.');}e.target.value='';};
+$('soundToggle').onclick=()=>{audioReady();setSound(!soundOn);if(soundOn)sfxClick()};$('muteBtn').onclick=()=>setSound(!soundOn);document.querySelectorAll('button').forEach(b=>{if(!['play','choose','maps','soundToggle','muteBtn'].includes(b.id))b.addEventListener('click',()=>{if(soundOn)sfxClick()})});
+document.querySelectorAll('[data-map]').forEach(b=>b.onclick=()=>{map=b.dataset.map;map='meadow';safeSave('infinityFight_map_v1','meadow');$('mapName').textContent=maps.meadow.name;buildWalls();toast('Карта выбрана: '+maps[map].name);show('menu');startMenuMusic()});
+$('pauseBtn').onclick=pause;$('resume').onclick=resume;$('restart').onclick=start;$('again').onclick=start;$('home').onclick=()=>{if(onlineMode)sendNet({type:'leave'});cleanupNetwork();screen='menu';$('hud').classList.add('hidden');$('controls').classList.add('hidden');show('menu');startMenuMusic()};$('overHome').onclick=()=>{if(onlineMode)sendNet({type:'leave'});cleanupNetwork();screen='menu';$('hud').classList.add('hidden');$('controls').classList.add('hidden');show('menu');startMenuMusic()};
+$('shoot').addEventListener('pointerdown',e=>{e.preventDefault();shooting=true;if(selected!=='witch')fireTimer=0});['pointerup','pointercancel','pointerleave'].forEach(ev=>$('shoot').addEventListener(ev,()=>shooting=false));$('super').addEventListener('pointerdown',e=>{e.preventDefault();superAttack()});
+const stick=$('stick'),nub=$('nub');stick.addEventListener('pointerdown',e=>{if(screen!=='play')return;e.preventDefault();joyId=e.pointerId;stick.setPointerCapture(joyId);const r=stick.getBoundingClientRect();joyCenter={x:r.left+r.width/2,y:r.top+r.height/2};joyMove(e)});stick.addEventListener('pointermove',e=>{if(e.pointerId===joyId)joyMove(e)});function joyMove(e){if(!joyCenter)return;let dx=e.clientX-joyCenter.x,dy=e.clientY-joyCenter.y,d=Math.hypot(dx,dy),max=38;if(d>max){dx=dx/d*max;dy=dy/d*max}move={x:dx/max,y:dy/max};nub.style.left=(35+dx)+'px';nub.style.top=(35+dy)+'px'}function resetJoy(){joyId=null;joyCenter=null;move={x:0,y:0};nub.style.left='35px';nub.style.top='35px'}['pointerup','pointercancel','lostpointercapture'].forEach(ev=>stick.addEventListener(ev,resetJoy));
+addEventListener('keydown',e=>{if(e.key==='Escape')screen==='play'?pause():screen==='pause'?resume():null;if(e.key===' '){shooting=true;}});addEventListener('keyup',e=>{if(e.key===' ')shooting=false});resize();refreshTrophies();refreshFighters();refreshFighterTrophies();show('menu');last=performance.now();loop(last);
+})();
+</script>
+</body>
+</html>
